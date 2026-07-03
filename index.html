@@ -1946,9 +1946,20 @@ function renderScholarMetrics(gs){
   const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ statsEl.querySelectorAll('.pm .n').forEach(anim); io.disconnect(); } }),{threshold:.5});
   io.observe(statsEl);
 }
+/* live Scholar metrics: auto-updated daily by the GitHub Action that publishes
+   gs_data.json to the `google-scholar-stats` branch. Falls back to data.json. */
+async function fetchScholarLive(){
+  try{
+    const r=await fetch('https://raw.githubusercontent.com/venkateshkolluru95/venkateshkolluru95.github.io/google-scholar-stats/gs_data.json',{cache:'no-store'});
+    if(!r.ok) throw 0; const j=await r.json();
+    if(j&&j.citations) return {citations:j.citations, hindex:j.hindex, i10:j.i10, user:j.user||'7Tji1bMAAAAJ'};
+  }catch(e){}
+  return null;
+}
 async function loadPubs(data){
   const featured=data.publications_featured||[]; let merged;
-  renderScholarMetrics(data.scholar);
+  const gs=(await fetchScholarLive())||data.scholar;
+  renderScholarMetrics(gs);
   try{ const fetched=await fetchOAPubs(); if(!fetched.length) throw 0; merged=[...featured,...dedupe(featured,fetched)];
   }catch(e){ merged=[...featured,...(data.publications_fallback||[])]; }
   allPubs=merged.map(p=>({...p, theme:themeOf(p)})); renderThemes(); renderPubs();

@@ -1,0 +1,33 @@
+name: Google Scholar metrics
+
+on:
+  schedule:
+    - cron: '0 8 * * *'      # daily at 08:00 UTC
+  workflow_dispatch:          # allow manual runs from the Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fetch Scholar metrics
+        env:
+          GOOGLE_SCHOLAR_ID: '7Tji1bMAAAAJ'
+        run: |
+          pip install -r google_scholar_crawler/requirements.txt
+          python google_scholar_crawler/main.py
+      - name: Publish to google-scholar-stats branch
+        run: |
+          cd results
+          git init -q
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add *.json
+          git commit -q -m "Update Google Scholar metrics"
+          git push --force "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:google-scholar-stats
