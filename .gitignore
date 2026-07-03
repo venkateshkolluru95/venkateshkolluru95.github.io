@@ -1,0 +1,15 @@
+# Raw camera/source originals — NOT for the web (web-optimized copies live in *_web/)
+assets/travel/
+assets/awards/
+assets/project_cards/
+
+# Local preview helper
+serve.py
+
+# Parked / dev-only
+_saved/
+
+# OS cruft
+.DS_Store
+**/.DS_Store
+Thumbs.db

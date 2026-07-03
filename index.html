@@ -1,0 +1,2232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Venkatesh Kolluru — Research Scientist · Earth Observation, Ecology &amp; AI</title>
+<meta name="description" content="Venkatesh Kolluru, Ph.D. — applied scientist working across Earth observation, landscape ecology, and hydrology; operationalizing geospatial foundation models that turn satellite archives into decision-ready maps." />
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&family=Caveat:wght@600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --void:#06080f;
+  --void-2:#0b1020;
+  --panel:rgba(13,18,32,.62);
+  --panel-line:rgba(232,236,244,.14);
+  --ink:#e8ecf4;
+  --ink-dim:#8a94a8;
+  --ink-faint:#5b6372;
+  --teal:#3fbf9a;     /* Prithvi-EO / foundation models */
+  --blue:#378add;     /* flood / water */
+  --amber:#f2a93b;    /* recognition / accent */
+  --violet:#8b7bb0;
+  --display:"Space Grotesk", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", monospace;
+  --body:"Inter", system-ui, sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(1100px 760px at 74% -8%, #142b4a 0%, transparent 55%),
+    radial-gradient(900px 700px at 78% 4%, #15294a 0%, transparent 52%),
+    var(--void);
+  color:var(--ink);
+  font-family:var(--body);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+  min-height:100vh;
+}
+a{color:inherit;text-decoration:none}
+
+/* ---------- top bar ---------- */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:30;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 28px;
+  backdrop-filter:blur(10px);
+  background:linear-gradient(180deg, rgba(6,8,15,.78), rgba(6,8,15,0));
+}
+.brand{font-family:var(--mono);font-size:13px;letter-spacing:.12em;color:var(--ink-dim)}
+.brand b{color:var(--ink);font-weight:500}
+.navlinks{display:flex;gap:22px;font-family:var(--mono);font-size:12.5px;letter-spacing:.06em}
+.navlinks a{color:var(--ink-dim);transition:color .2s}
+.navlinks a:hover{color:var(--teal)}
+/* hamburger button + slide-in drawer (mobile/tablet only) */
+.navbtn{display:none;flex-direction:column;gap:5px;width:42px;height:42px;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.04);border:1px solid var(--panel-line);border-radius:11px;cursor:pointer;flex:0 0 auto}
+.navbtn span{display:block;width:18px;height:2px;border-radius:2px;background:var(--ink);transition:transform .3s,opacity .2s}
+.navbtn[aria-expanded="true"] span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.navbtn[aria-expanded="true"] span:nth-child(2){opacity:0}
+.navbtn[aria-expanded="true"] span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.drawer-scrim{position:fixed;inset:0;z-index:34;background:rgba(2,4,9,.6);backdrop-filter:blur(3px);
+  opacity:0;pointer-events:none;transition:opacity .3s}
+.drawer-scrim.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;z-index:35;width:min(78vw,300px);
+  background:linear-gradient(200deg,rgba(16,22,38,.98),rgba(8,11,20,.98));border-left:1px solid var(--panel-line);
+  backdrop-filter:blur(14px);padding:18px 20px;display:flex;flex-direction:column;gap:2px;
+  transform:translateX(100%);transition:transform .35s var(--spring);box-shadow:-30px 0 80px -30px rgba(0,0,0,.9)}
+.drawer.open{transform:none}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;
+  font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--ink-faint)}
+.drawer-x{width:34px;height:34px;border-radius:10px;border:1px solid var(--panel-line);background:rgba(255,255,255,.04);
+  color:var(--ink);font-size:15px;cursor:pointer}
+.drawer a{font-family:var(--display);font-weight:500;font-size:19px;color:var(--ink-dim);padding:13px 8px;
+  border-bottom:1px solid var(--panel-line);transition:color .2s,padding-left .2s}
+.drawer a:hover,.drawer a:active{color:var(--teal);padding-left:14px}
+@media(max-width:900px){
+  .topbar{padding:12px 16px;background:linear-gradient(180deg, rgba(6,8,15,.92), rgba(6,8,15,.4) 82%, rgba(6,8,15,0))}
+  .brand{font-size:12px}
+  .brand .brand-sub{display:none}
+  .navlinks{display:none}
+  .navbtn{display:flex}
+}
+@media(min-width:901px){ .drawer,.drawer-scrim{display:none} }
+
+/* ---------- hero / canvas ---------- */
+#globe{position:fixed;inset:0;width:100vw;height:100vh;display:block;z-index:0;transition:opacity .8s}
+.layers{transition:opacity .5s}
+#scene-wrap{position:relative;width:100%;height:100vh;min-height:580px;z-index:1;pointer-events:none}
+.hero-copy{
+  position:absolute;left:6.5%;top:50%;transform:translateY(-50%);
+  z-index:10;max-width:560px;pointer-events:none;text-align:left;
+}
+.eyebrow{
+  font-family:var(--mono);font-size:12px;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--teal);margin-bottom:18px;
+  display:inline-flex;align-items:center;gap:9px;
+}
+.eyebrow .pulse{width:7px;height:7px;border-radius:50%;background:var(--teal);
+  box-shadow:0 0 10px var(--teal);animation:pulse 1.8s infinite}
+.hero-name{
+  font-family:var(--display);font-weight:600;line-height:1;letter-spacing:-.025em;
+  font-size:clamp(40px,6.6vw,78px);
+  background:linear-gradient(180deg,#ffffff 0%, #c7d2e6 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero-copy h1{
+  font-family:var(--display);font-weight:500;line-height:1.12;
+  font-size:clamp(20px,2.6vw,30px);letter-spacing:-.01em;margin-top:16px;color:var(--ink);
+}
+.hero-copy h1 .accent{color:var(--teal);font-weight:500}
+.hero-copy p{
+  margin-top:18px;color:var(--ink-dim);font-size:16px;line-height:1.65;max-width:480px;
+}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px;pointer-events:auto}
+.btn{font-family:var(--mono);font-size:12.5px;letter-spacing:.04em;
+  border:1px solid var(--panel-line);border-radius:11px;padding:12px 18px;color:var(--ink);
+  background:rgba(255,255,255,.03);transition:border-color .2s,color .2s,background .2s}
+.btn:hover{border-color:var(--teal);color:var(--teal)}
+.btn.primary{background:var(--teal);color:#04150f;border-color:var(--teal);font-weight:500}
+.btn.primary:hover{color:#04150f;opacity:.92}
+
+.hint{
+  position:absolute;left:6.5%;bottom:40px;z-index:10;
+  font-family:var(--mono);font-size:12px;color:var(--ink-faint);
+  text-align:left;line-height:1.9;
+}
+.scroll-cue{
+  position:absolute;left:50%;bottom:26px;transform:translateX(-50%);z-index:10;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--ink-faint);text-align:center;
+}
+.scroll-cue .arrow{display:block;margin:8px auto 0;width:1px;height:34px;
+  background:linear-gradient(180deg,var(--ink-faint),transparent);animation:cue 2.2s infinite}
+@keyframes cue{0%{opacity:.2;transform:translateY(-6px)}50%{opacity:1;transform:translateY(0)}100%{opacity:.2;transform:translateY(-6px)}}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+@media(max-width:900px){
+  .hero-copy{left:14px;right:14px;top:auto;bottom:88px;transform:none;max-width:none;
+    padding:18px 16px;border-radius:18px;background:rgba(4,6,12,.52);
+    backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);
+    border:1px solid rgba(232,236,244,.07)}
+  .hero-copy p{font-size:14.5px;margin-top:12px}
+  .hero-copy h1{margin-top:12px}
+  .eyebrow{margin-bottom:12px;letter-spacing:.14em;font-size:10.5px}
+  .cta{margin-top:18px}
+  .btn{padding:10px 14px;font-size:12px}
+  .hint{display:none}
+  .scroll-cue{display:none}
+}
+
+/* temporary Earth-layer switcher (will be driven by sections later) */
+.layers{
+  position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:27;
+  display:flex;gap:6px;padding:7px 8px;align-items:center;flex-wrap:wrap;justify-content:center;
+  border:1px solid var(--panel-line);border-radius:14px;max-width:94vw;
+  background:rgba(11,16,32,.72);backdrop-filter:blur(10px);pointer-events:auto;
+}
+.layers .lab{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);padding:0 6px}
+.layers button{font-family:var(--mono);font-size:11.5px;letter-spacing:.03em;color:var(--ink-dim);
+  background:transparent;border:1px solid transparent;border-radius:9px;padding:8px 12px;cursor:pointer;transition:.2s;white-space:nowrap}
+.layers button:hover{color:var(--ink)}
+.layers button.active{color:#04150f;background:var(--teal);border-color:var(--teal);font-weight:500}
+@media(max-width:900px){
+  /* single-row, thumb-scrollable chip bar pinned to the bottom */
+  .layers{left:10px;right:10px;bottom:10px;transform:none;max-width:none;
+    flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;
+    -webkit-overflow-scrolling:touch;scrollbar-width:none;
+    mask-image:linear-gradient(90deg,#000 90%,transparent)}
+  .layers::-webkit-scrollbar{display:none}
+  .layers .lab{display:none}
+  .layers button{font-size:10.5px;padding:7px 10px;flex:0 0 auto}
+}
+
+/* floating label tooltip over canvas */
+#tooltip{
+  position:fixed;z-index:25;pointer-events:none;opacity:0;transform:translate(-50%,-130%);
+  transition:opacity .15s;
+  font-family:var(--mono);font-size:12px;letter-spacing:.04em;
+  background:rgba(11,16,32,.92);border:1px solid var(--panel-line);
+  padding:8px 12px;border-radius:9px;white-space:nowrap;color:var(--ink);
+  box-shadow:0 8px 34px rgba(0,0,0,.5);backdrop-filter:blur(6px);
+}
+#tooltip .t-sub{color:var(--teal);display:block;font-size:10.5px;margin-top:3px;letter-spacing:.1em}
+
+/* loader */
+#loader{position:fixed;inset:0;z-index:60;background:var(--void);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
+  transition:opacity .7s}
+#loader.done{opacity:0;pointer-events:none}
+.loader-ring{width:46px;height:46px;border:2px solid rgba(232,236,244,.14);
+  border-top-color:var(--teal);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#loader p{font-family:var(--mono);font-size:11px;letter-spacing:.22em;color:var(--ink-dim);text-transform:uppercase}
+
+/* ============ full-page content sections ============ */
+main{position:relative;z-index:5}
+.section{position:relative;z-index:5;padding:104px 28px}
+.wrap{max-width:1080px;margin:0 auto;background:rgba(9,12,20,.72);backdrop-filter:blur(12px);
+  border:1px solid var(--panel-line);border-radius:22px;padding:46px 46px 50px}
+@media(max-width:680px){.wrap{padding:30px 22px}.section{padding:72px 16px}}
+.sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:30px}
+.sec-num{font-family:var(--mono);font-size:13px;color:var(--teal);letter-spacing:.1em}
+.sec-head h2{font-family:var(--display);font-weight:600;font-size:clamp(24px,3.2vw,36px);letter-spacing:-.01em;color:var(--ink)}
+.sec-head .line{flex:1;height:1px;background:var(--panel-line)}
+.lede{font-size:17px;line-height:1.75;color:var(--ink-dim);max-width:780px}
+.lede strong{color:var(--ink);font-weight:600}
+.sub-h{font-family:var(--display);font-weight:600;font-size:15px;color:var(--ink-dim);letter-spacing:.02em;
+  margin:34px 0 0;padding-top:22px;border-top:1px solid var(--panel-line)}
+
+/* inline text links (education, service, experience) */
+.tlink{color:inherit;border-bottom:1px dotted rgba(63,191,154,.55);transition:color .2s,border-color .2s}
+.tlink:hover{color:var(--teal);border-bottom-color:var(--teal)}
+a.stat{display:block;color:inherit;cursor:pointer;transition:border-color .25s,transform .25s}
+a.stat:hover{border-color:rgba(63,191,154,.5);transform:translateY(-2px)}
+.xp-body a{color:var(--ink-dim);border-bottom:1px dotted rgba(63,191,154,.55)}
+.xp-body a:hover{color:var(--teal)}
+
+/* professional portrait beside the About lede */
+.about-flex{display:flex;gap:34px;align-items:flex-start}
+.about-flex .lede{flex:1;min-width:0}
+.portrait{flex:0 0 216px;margin:6px 0 0;text-align:center}
+.portrait .p-ring{position:relative;width:216px;height:216px;border-radius:50%;padding:5px;
+  background:conic-gradient(from 210deg,var(--teal),var(--blue),rgba(63,191,154,.15),var(--teal));
+  box-shadow:0 22px 60px -22px rgba(0,0,0,.85), 0 0 44px -18px rgba(63,191,154,.55)}
+.portrait img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;border:3px solid #0a0f1c}
+.portrait figcaption{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--ink-faint);margin-top:12px}
+@media(max-width:760px){.about-flex{flex-direction:column;align-items:center}
+  .about-flex .lede{order:2}.portrait{order:1;flex-basis:auto}}
+.grid{display:grid;gap:18px;margin-top:22px}
+.cols-2{grid-template-columns:repeat(2,1fr)}.cols-3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:820px){.cols-2,.cols-3{grid-template-columns:1fr}}
+.card{background:rgba(255,255,255,.03);border:1px solid var(--panel-line);border-radius:16px;padding:22px;
+  transition:transform .25s,border-color .25s,background .25s}
+.card:hover{transform:translateY(-4px);border-color:rgba(63,191,154,.5);background:rgba(255,255,255,.05)}
+.card .tag{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.card h3{font-family:var(--display);font-weight:600;font-size:18px;margin:9px 0 7px;color:var(--ink)}
+.card p{color:var(--ink-dim);font-size:14.5px;line-height:1.6}
+.card .metric{font-family:var(--mono);color:var(--blue);font-size:12.5px;margin-top:12px}
+.chiprow{display:flex;flex-wrap:wrap;gap:9px;margin-top:20px}
+.chip{font-family:var(--mono);font-size:11.5px;color:var(--ink-dim);border:1px solid var(--panel-line);
+  border-radius:999px;padding:6px 13px;background:rgba(255,255,255,.02)}
+.statline{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.stat{flex:1;min-width:140px;background:rgba(255,255,255,.03);border:1px solid var(--panel-line);border-radius:14px;padding:18px 20px}
+.stat .n{font-family:var(--display);font-weight:700;font-size:27px;color:var(--ink)}
+.stat .l{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--ink-dim);text-transform:uppercase;margin-top:5px}
+
+/* news auto-scroll ticker */
+.news-vp{position:relative;max-height:300px;overflow-y:auto;padding-right:8px;
+  mask-image:linear-gradient(180deg,transparent,#000 8%,#000 92%,transparent)}
+.news-vp::-webkit-scrollbar{width:8px}
+.news-vp::-webkit-scrollbar-thumb{background:var(--panel-line);border-radius:8px}
+.news-vp::-webkit-scrollbar-thumb:hover{background:rgba(63,191,154,.5)}
+.news-track{display:flex;flex-direction:column;gap:0}
+.news-item{display:flex;gap:18px;padding:13px 2px;border-bottom:1px solid var(--panel-line);align-items:baseline}
+.news-item .d{font-family:var(--mono);font-size:12.5px;color:var(--teal);min-width:70px;letter-spacing:.04em}
+.news-item .t{color:var(--ink-dim);font-size:14.5px;line-height:1.55}
+.news-item .t b{color:var(--ink)}.news-item .t a{color:var(--blue);text-decoration:underline;text-underline-offset:2px}
+.news-pause{margin-top:14px;font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);background:none;border:1px solid var(--panel-line);
+  border-radius:8px;padding:6px 12px;cursor:pointer}.news-pause:hover{color:var(--teal);border-color:var(--teal)}
+
+/* projects: split imagery + text */
+.proj{display:grid;grid-template-columns:minmax(0,42%) 1fr;gap:26px;align-items:center;margin-top:26px;
+  background:rgba(255,255,255,.025);border:1px solid var(--panel-line);border-radius:18px;padding:18px;overflow:hidden}
+.proj:nth-child(even){grid-template-columns:1fr minmax(0,42%)}
+.proj:nth-child(even) .proj-media{order:2}
+@media(max-width:820px){.proj,.proj:nth-child(even){grid-template-columns:1fr}.proj:nth-child(even) .proj-media{order:0}}
+.proj-media{position:relative;aspect-ratio:4/3;border-radius:14px;overflow:hidden;background:
+  repeating-linear-gradient(45deg,rgba(63,191,154,.05),rgba(63,191,154,.05) 12px,rgba(55,138,221,.05) 12px,rgba(55,138,221,.05) 24px);
+  border:1px dashed var(--panel-line);display:flex;align-items:center;justify-content:center}
+.proj-media img,.proj-media video{width:100%;height:100%;object-fit:cover;display:block}
+.proj-media .ph{font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);text-align:center;padding:14px;line-height:1.7}
+.proj-body .tag{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.proj-body h3{font-family:var(--display);font-weight:600;font-size:21px;margin:8px 0 10px;color:var(--ink)}
+.proj-body p{color:var(--ink-dim);font-size:14.5px;line-height:1.65}
+.proj-body .metric{font-family:var(--mono);color:var(--blue);font-size:12.5px;margin-top:12px}
+.proj-body a{color:var(--teal)}
+
+/* publications: theme filter + list */
+.pub-themes{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 22px}
+.pub-themes button{font-family:var(--mono);font-size:11.5px;color:var(--ink-dim);background:rgba(255,255,255,.03);
+  border:1px solid var(--panel-line);border-radius:999px;padding:7px 14px;cursor:pointer;transition:.2s}
+.pub-themes button:hover{color:var(--ink)}
+.pub-themes button.active{color:#04150f;background:var(--teal);border-color:var(--teal);font-weight:500}
+.pub-list{max-height:560px;overflow-y:auto;padding-right:8px}
+.pub-list::-webkit-scrollbar{width:8px}.pub-list::-webkit-scrollbar-thumb{background:var(--panel-line);border-radius:8px}
+.pub{border-bottom:1px solid var(--panel-line);padding:16px 0;display:flex;gap:16px;align-items:flex-start}
+.pub .yr{font-family:var(--mono);color:var(--teal);font-size:13px;min-width:46px}
+.pub .meta{font-size:14.5px;line-height:1.55;color:var(--ink-dim)}
+.pub .meta b{color:var(--ink);font-weight:600}.pub .meta .j{font-style:italic}
+.pub .meta a{color:var(--blue)}
+.pub .badge{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.06em;border:1px solid var(--amber);
+  color:var(--amber);border-radius:999px;padding:1px 8px;margin-left:6px;vertical-align:middle}
+.pub .cites{font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);margin-left:6px}
+.live-chip{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;border:1px solid var(--panel-line);
+  border-radius:999px;padding:7px 14px;color:var(--ink-dim);margin-bottom:8px}
+.live-chip .dot{width:7px;height:7px;border-radius:50%;background:var(--teal);box-shadow:0 0 8px var(--teal);animation:pulse 1.8s infinite}
+
+/* talks */
+.talk{padding:13px 0;border-bottom:1px solid var(--panel-line);color:var(--ink-dim);font-size:14.5px;line-height:1.55}
+.talk .v{font-family:var(--mono);font-size:12px;color:var(--violet)}
+.talk .yr{font-family:var(--mono);font-size:11px;color:var(--ink-faint);letter-spacing:.05em}
+.talk .rl{font-family:var(--mono);font-size:10px;letter-spacing:.06em;padding:2px 7px;border-radius:999px;margin-left:8px;vertical-align:middle}
+.talk .rl.lead{color:#04150f;background:linear-gradient(120deg,var(--teal),#2fae8c)}
+.talk .rl.co{color:var(--ink-dim);border:1px solid var(--panel-line)}
+.talk .rl.oral{color:var(--violet);border:1px solid rgba(150,120,255,.4);margin-left:6px}
+.talk .rl.up{color:var(--amber);border:1px solid rgba(242,169,59,.4);margin-left:6px}
+.talk a.tk{color:var(--ink-dim);border-bottom:1px dotted rgba(63,191,154,.5);transition:color .2s}
+.talk a.tk:hover{color:var(--teal)}
+
+/* recognition coverflow */
+.cf{position:relative;height:340px;margin-top:14px;perspective:1400px;overflow:hidden}
+.cf-stage{position:absolute;inset:0;transform-style:preserve-3d}
+.cf-card{position:absolute;top:50%;left:50%;width:300px;height:200px;margin:-100px 0 0 -150px;border-radius:16px;
+  border:1px solid var(--panel-line);background:rgba(13,18,32,.92);overflow:hidden;transition:transform .5s cubic-bezier(.25,1,.5,1),opacity .5s;
+  display:flex;flex-direction:column;justify-content:flex-end;padding:18px;cursor:pointer}
+.cf-card .yr{font-family:var(--mono);font-size:11.5px;color:var(--amber);letter-spacing:.08em}
+.cf-card .ti{font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);margin-top:6px;line-height:1.25}
+.cf-card .org{font-size:12.5px;color:var(--ink-dim);margin-top:5px}
+.cf-card .imgph{position:absolute;inset:0;background:linear-gradient(160deg,rgba(63,191,154,.12),rgba(55,138,221,.12));z-index:-1;overflow:hidden}
+.cf-card .imgph img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
+.cf-card::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,10,18,.12) 26%,rgba(6,10,18,.68) 55%,rgba(6,10,18,.94) 100%);z-index:-1}
+.cf-card .ti,.cf-card .org,.cf-card .yr{text-shadow:0 1px 10px rgba(4,6,12,.9)}
+.cf-card .play{position:absolute;top:12px;right:12px;width:30px;height:30px;border-radius:50%;
+  background:rgba(6,10,18,.62);border:1px solid rgba(255,255,255,.25);color:#fff;font-size:12px;
+  display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.cf-card .exp{position:absolute;top:12px;left:12px;font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;
+  color:var(--ink);background:rgba(6,10,18,.55);border:1px solid rgba(255,255,255,.18);border-radius:999px;
+  padding:3px 8px;opacity:0;transition:opacity .3s;backdrop-filter:blur(4px)}
+.cf-card.center .exp{opacity:1}
+/* award lightbox (reuses gt-lb visual language) */
+.aw-lb{position:fixed;inset:0;z-index:120;display:none;background:rgba(2,4,9,.92);backdrop-filter:blur(18px);
+  flex-direction:column;align-items:center;justify-content:center;padding:40px 26px}
+.aw-lb.open{display:flex}
+.aw-lb img,.aw-lb video{max-width:min(1000px,94vw);max-height:78vh;border-radius:12px;
+  box-shadow:0 40px 120px -30px rgba(0,0,0,.95);background:#0b0f18}
+.aw-cap{font-family:var(--mono);font-size:12px;color:var(--ink-dim);margin-top:16px;text-align:center;letter-spacing:.05em}
+.aw-cap b{color:var(--ink);font-weight:500}.aw-cap .yr{color:var(--amber)}
+.aw-cap a{color:var(--teal);border-bottom:1px dotted rgba(63,191,154,.5)}
+.aw-x{position:fixed;top:20px;right:24px;width:40px;height:40px;border-radius:12px;border:1px solid var(--panel-line);
+  background:rgba(255,255,255,.05);color:var(--ink);font-size:17px;cursor:pointer}
+.aw-x:hover{background:rgba(255,80,80,.15);border-color:rgba(255,110,110,.5)}
+.cf-nav{display:flex;gap:10px;justify-content:center;margin-top:16px}
+.cf-nav button{font-family:var(--mono);font-size:14px;width:38px;height:38px;border-radius:50%;border:1px solid var(--panel-line);
+  background:rgba(255,255,255,.03);color:var(--ink-dim);cursor:pointer}.cf-nav button:hover{color:var(--teal);border-color:var(--teal)}
+
+/* travel pin popup (real cover photo) */
+#travel-pop{position:fixed;z-index:28;pointer-events:none;opacity:0;transform:translate(-50%,-118%);transition:opacity .15s;
+  background:rgba(11,16,32,.95);border:1px solid var(--panel-line);border-radius:12px;padding:10px;width:200px;box-shadow:0 10px 40px rgba(0,0,0,.6)}
+#travel-pop .pimg{width:100%;height:110px;border-radius:8px;overflow:hidden;background:linear-gradient(160deg,rgba(63,191,154,.2),rgba(55,138,221,.2))}
+#travel-pop .pimg img{width:100%;height:100%;object-fit:cover;display:block}
+#travel-pop .pcap{font-family:var(--mono);font-size:11.5px;color:var(--ink);margin-top:8px}
+
+/* ---- GROUND TRUTH: polaroid campaign cards ---- */
+.gt-tag{font-family:var(--mono);font-size:12.5px;color:var(--ink-dim);letter-spacing:.04em;margin:6px 0 0}
+.gt-tag b{color:var(--teal);font-weight:500}
+.gt-how{font-family:var(--mono);font-size:13px;color:var(--ink);letter-spacing:.03em;margin:18px 0 0;
+  display:inline-block;padding:11px 16px;border:1px solid rgba(63,191,154,.35);border-radius:12px;
+  background:rgba(63,191,154,.07)}
+.gt-how span{color:var(--teal);font-weight:500}
+@media(hover:none){.gt-how{display:none}}   /* touch devices: hover doesn't exist, tap = open */
+.gt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(172px,1fr));gap:34px 24px;margin-top:30px}
+.gt-card{position:relative;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.gt-card .under{position:absolute;inset:0;border-radius:4px;background:#f4f1ea;
+  box-shadow:0 10px 30px -12px rgba(0,0,0,.85);transition:transform .55s cubic-bezier(.16,1,.3,1)}
+.gt-card .u1{transform:rotate(-5deg) translate(-4px,3px)}
+.gt-card .u2{transform:rotate(3.4deg) translate(5px,-2px)}
+.gt-card:hover .u1{transform:rotate(-9deg) translate(-13px,7px)}
+.gt-card:hover .u2{transform:rotate(7deg) translate(13px,-5px)}
+.gt-pol{position:relative;background:#faf8f3;border-radius:4px;padding:8px 8px 11px;
+  box-shadow:0 18px 44px -16px rgba(0,0,0,.9), inset 0 0 0 1px rgba(0,0,0,.04);
+  transform:rotate(var(--tilt,0deg));transition:transform .55s cubic-bezier(.16,1,.3,1)}
+.gt-card:hover .gt-pol{transform:rotate(0deg) translateY(-7px) scale(1.03)}
+.gt-ph{position:relative;aspect-ratio:4/3.4;overflow:hidden;border-radius:2px;background:#1a2030}
+.gt-ph img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(1.04)}
+.gt-ph::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 40%,rgba(63,191,154,.34) 50%,transparent 60%);
+  transform:translateX(-130%)}
+.gt-card:hover .gt-ph::after{transform:translateX(130%);transition:transform .9s ease}
+.gt-cap{display:flex;align-items:baseline;justify-content:space-between;margin-top:8px;gap:8px}
+.gt-cap .nm{font-family:Caveat,cursive;font-weight:600;font-size:16.5px;color:#242b38;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gt-cap .co{font-family:var(--mono);font-size:9px;color:#8a92a2;letter-spacing:.03em;white-space:nowrap}
+.gt-badge{position:absolute;top:-9px;right:-9px;z-index:2;font-family:var(--mono);font-size:10.5px;color:#04150f;
+  background:linear-gradient(120deg,var(--teal),#2fae8c);border-radius:999px;padding:4px 9px;
+  box-shadow:0 6px 18px -6px rgba(63,191,154,.7)}
+.gt-badge .vd{margin-left:4px}
+
+/* ---- GROUND TRUTH: lightbox ---- */
+.gt-lb{position:fixed;inset:0;z-index:120;display:none;background:rgba(2,4,9,.9);backdrop-filter:blur(18px)}
+.gt-lb.open{display:flex;flex-direction:column}
+.gt-lb-top{display:flex;align-items:center;justify-content:space-between;padding:18px 26px;gap:14px}
+.gt-meta{font-family:var(--mono);font-size:11.5px;line-height:1.7;color:var(--ink-dim);letter-spacing:.07em;min-width:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gt-meta b{color:var(--ink);font-weight:500}
+.gt-meta .tl{color:var(--teal)}
+.gt-x{flex:0 0 auto;width:38px;height:38px;border-radius:11px;border:1px solid var(--panel-line);background:rgba(255,255,255,.04);
+  color:var(--ink);font-size:16px;cursor:pointer;transition:.25s}
+.gt-x:hover{background:rgba(255,80,80,.15);border-color:rgba(255,110,110,.5)}
+.gt-lb-main{flex:1;position:relative;display:flex;align-items:center;justify-content:center;min-height:0;padding:0 76px}
+@media(max-width:680px){.gt-lb-main{padding:0 8px}}
+.gt-frame{position:relative;max-width:100%;max-height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:10px}
+.gt-frame img,.gt-frame video{max-width:100%;max-height:calc(100vh - 210px);display:block;border-radius:10px;
+  box-shadow:0 40px 120px -30px rgba(0,0,0,.95)}
+.gt-frame img.kb{animation:gtkb 9s ease-in-out infinite alternate}
+@keyframes gtkb{from{transform:scale(1) translate(0,0)}to{transform:scale(1.07) translate(-1.2%,1%)}}
+.gt-frame .scan{position:absolute;inset:0;pointer-events:none;opacity:0;
+  background:linear-gradient(180deg,transparent 0%,rgba(63,191,154,.28) 49%,rgba(63,191,154,.85) 50%,rgba(63,191,154,.28) 51%,transparent 100%);
+  background-size:100% 300%;background-position:0 100%}
+.gt-frame .scan.go{opacity:1;animation:gtscan .5s ease forwards}
+@keyframes gtscan{from{background-position:0 100%}to{background-position:0 0%}}
+.gt-nav{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;
+  border:1px solid var(--panel-line);background:rgba(10,14,24,.7);color:var(--ink);font-size:18px;cursor:pointer;
+  backdrop-filter:blur(8px);transition:.25s;z-index:5}
+.gt-nav:hover{border-color:var(--teal);color:var(--teal);box-shadow:0 0 24px -6px rgba(63,191,154,.6)}
+.gt-nav.prev{left:16px}.gt-nav.next{right:16px}
+.gt-strip{display:flex;gap:8px;justify-content:flex-start;align-items:center;padding:14px 26px 18px;overflow-x:auto;scrollbar-width:thin}
+.gt-strip::before,.gt-strip::after{content:"";margin:auto}
+.gt-th{flex:0 0 auto;width:66px;height:48px;border-radius:7px;overflow:hidden;cursor:pointer;position:relative;
+  border:2px solid transparent;opacity:.55;transition:.25s}
+.gt-th img{width:100%;height:100%;object-fit:cover;display:block}
+.gt-th.on{border-color:var(--teal);opacity:1;box-shadow:0 0 16px -4px rgba(63,191,154,.7)}
+.gt-th:hover{opacity:1}
+.gt-th .play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.35);color:#fff;font-size:13px;text-shadow:0 1px 6px rgba(0,0,0,.8)}
+
+/* ---- small-screen (phone) refinements ---- */
+@media(max-width:480px){
+  .gt-grid{grid-template-columns:repeat(2,1fr);gap:24px 14px}
+  .gt-cap .nm{font-size:13.5px}
+  .gt-cap .co{display:none}                      /* coords don't fit two-up; shown in lightbox anyway */
+  .gt-badge{font-size:9px;padding:3px 7px;top:-7px;right:-7px}
+  .gt-nav{width:38px;height:38px;font-size:15px}
+  .gt-nav.prev{left:4px}.gt-nav.next{right:4px}
+  .gt-frame img,.gt-frame video{max-height:calc(100vh - 190px)}
+  .gt-lb-top{padding:14px 14px}
+  .gt-strip{padding:10px 14px 14px}
+  .cf{height:290px}
+  .cf-card{width:250px;height:180px;margin:-90px 0 0 -125px;padding:14px}
+  .cf-card .ti{font-size:14px}
+  .aw-lb{padding:24px 12px}
+  .statline{gap:9px}
+  .stat{min-width:calc(50% - 5px);padding:14px 15px}
+  .stat .n{font-size:22px}
+  .portrait{flex-basis:auto}
+  .portrait .p-ring{width:176px;height:176px}
+}
+
+/* experience expandable */
+.xp{background:rgba(255,255,255,.03);border:1px solid var(--panel-line);border-radius:16px;overflow:hidden;margin-top:12px}
+.xp summary{list-style:none;cursor:pointer;padding:18px 22px;display:grid;grid-template-columns:1fr auto;gap:2px 12px}
+.xp summary::-webkit-details-marker{display:none}
+.xp-when{font-family:var(--mono);font-size:12px;color:var(--teal);letter-spacing:.05em}
+.xp-role{font-family:var(--display);font-weight:600;font-size:18px;color:var(--ink);margin-top:3px}
+.xp-org{color:var(--ink-dim);font-size:14px;margin-top:2px}
+.xp-chev{align-self:center;color:var(--ink-faint);transition:transform .3s}.xp[open] .xp-chev{transform:rotate(180deg);color:var(--teal)}
+.xp-body{padding:0 22px 20px}.xp-body ul{list-style:none;display:grid;gap:11px;margin-top:6px}
+.xp-body li{padding-left:20px;position:relative;color:var(--ink-dim);font-size:14px;line-height:1.6}
+.xp-body li::before{content:"";position:absolute;left:0;top:8px;width:7px;height:7px;border-radius:2px;background:var(--teal)}
+.xp-body li b{color:var(--ink)}
+
+/* contact + footer */
+.contact{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+footer{position:relative;z-index:5;border-top:1px solid var(--panel-line);padding:34px 28px;text-align:center;
+  font-family:var(--mono);font-size:12px;color:var(--ink-faint);letter-spacing:.05em;background:rgba(6,8,15,.85)}
+footer a{color:var(--ink-dim)}
+.backtop{position:fixed;right:22px;bottom:74px;z-index:26;width:42px;height:42px;border-radius:50%;border:1px solid var(--panel-line);
+  background:rgba(11,16,32,.8);color:var(--ink-dim);display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity .3s}
+.backtop.show{opacity:1}.backtop:hover{color:var(--teal);border-color:var(--teal)}
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .7s,transform .7s}.reveal.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+
+/* ============ enhancement pass: Aurora gradients + glassmorphism + spring motion ============ */
+:root{ --spring:cubic-bezier(0.16,1,0.3,1); }
+/* animated Aurora mesh-gradient field behind the globe + content */
+.aurora{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;filter:blur(8px)}
+.aurora span{position:absolute;border-radius:50%;filter:blur(70px);opacity:.5;will-change:transform}
+.aurora .a1{width:46vw;height:46vw;left:-8vw;top:-6vw;background:radial-gradient(circle at 50% 50%, rgba(63,191,154,.40), transparent 68%);animation:drift1 22s ease-in-out infinite}
+.aurora .a2{width:40vw;height:40vw;left:38vw;top:30vh;background:radial-gradient(circle at 50% 50%, rgba(55,138,221,.34), transparent 68%);animation:drift2 26s ease-in-out infinite}
+.aurora .a3{width:32vw;height:32vw;left:6vw;top:64vh;background:radial-gradient(circle at 50% 50%, rgba(242,169,59,.20), transparent 70%);animation:drift3 30s ease-in-out infinite}
+@keyframes drift1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(8vw,6vh) scale(1.15)}}
+@keyframes drift2{0%,100%{transform:translate(0,0) scale(1.05)}50%{transform:translate(-7vw,-5vh) scale(.9)}}
+@keyframes drift3{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(5vw,-7vh) scale(1.2)}}
+@media(prefers-reduced-motion:reduce){.aurora span{animation:none}}
+
+/* glassmorphism panels — frosted glass + gradient edge + top highlight */
+.wrap{background:linear-gradient(165deg, rgba(22,28,44,.58), rgba(9,12,20,.80));
+  backdrop-filter:blur(18px) saturate(1.25); -webkit-backdrop-filter:blur(18px) saturate(1.25);
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07), 0 30px 80px -34px rgba(0,0,0,.75);position:relative;overflow:hidden}
+.wrap::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;opacity:.7;pointer-events:none;
+  background:linear-gradient(150deg, rgba(63,191,154,.55), rgba(55,138,221,.20) 38%, transparent 60%, rgba(242,169,59,.30));
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+
+/* gradient section numbers + animated nav underline */
+.sec-num{background:linear-gradient(90deg,var(--teal),var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:600}
+.navlinks a{position:relative}
+.navlinks a::after{content:"";position:absolute;left:0;right:100%;bottom:-4px;height:1.5px;border-radius:2px;
+  background:linear-gradient(90deg,var(--teal),var(--blue));transition:right .3s var(--spring)}
+.navlinks a:hover::after{right:0}
+
+/* cards: glass + spring hover lift + glow + staggered reveal */
+.card,.stat,.proj,.chip{transition:transform .45s var(--spring),border-color .3s,background .3s,box-shadow .45s var(--spring)}
+.card{background:linear-gradient(160deg, rgba(255,255,255,.055), rgba(255,255,255,.02));box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+.card:hover{transform:translateY(-6px) scale(1.012);border-color:rgba(63,191,154,.5);
+  box-shadow:0 22px 50px -22px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.08), 0 0 0 1px rgba(63,191,154,.18)}
+.card:active{transform:translateY(-2px) scale(.995)}
+.chip:hover{border-color:rgba(63,191,154,.5);color:var(--ink);transform:translateY(-2px)}
+.wrap .card,.wrap .proj{opacity:0;transform:translateY(18px)}
+.wrap.in .card,.wrap.in .proj{opacity:1;transform:none;transition:opacity .6s var(--spring),transform .6s var(--spring)}
+.wrap.in .card:nth-child(2){transition-delay:.07s}.wrap.in .card:nth-child(3){transition-delay:.14s}
+.wrap.in .card:nth-child(4){transition-delay:.21s}.wrap.in .card:nth-child(5){transition-delay:.28s}
+.wrap.in .proj:nth-child(2){transition-delay:.06s}.wrap.in .proj:nth-child(3){transition-delay:.12s}.wrap.in .proj:nth-child(4){transition-delay:.18s}
+@media(prefers-reduced-motion:reduce){.wrap .card,.wrap .proj{opacity:1;transform:none}}
+
+/* primary button: gradient + moving sheen */
+.btn.primary{background:linear-gradient(120deg,var(--teal),#2fae8c 55%,var(--blue));border-color:transparent;position:relative;overflow:hidden;
+  box-shadow:0 8px 28px -10px rgba(63,191,154,.6)}
+.btn.primary::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;transform:skewX(-20deg);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);transition:left .6s var(--spring)}
+.btn.primary:hover::after{left:130%}
+.btn.primary:hover{opacity:1;transform:translateY(-1px);box-shadow:0 12px 32px -8px rgba(63,191,154,.75)}
+.btn:not(.primary){transition:transform .35s var(--spring),border-color .25s,color .25s,background .25s}
+.btn:not(.primary):hover{transform:translateY(-2px)}
+
+/* theme/layer chips + pub-theme: spring + gradient active */
+.pub-themes button,.layers button{transition:transform .3s var(--spring),background .25s,color .25s,border-color .25s}
+.pub-themes button.active{background:linear-gradient(120deg,var(--teal),var(--blue));border-color:transparent}
+.layers button.active{background:linear-gradient(120deg,var(--teal),var(--blue));border-color:transparent}
+
+/* AI cards get a subtle gradient sheen border on hover */
+#ai .card:hover{box-shadow:0 22px 50px -22px rgba(0,0,0,.7), 0 0 0 1px rgba(55,138,221,.4)}
+
+/* ============ push-further pass: bolder, animated, unmistakable ============ */
+@property --ang{syntax:'<angle>';initial-value:0deg;inherits:false}
+
+/* brighter, more present aurora */
+.aurora span{opacity:.72;filter:blur(60px)}
+.aurora .a4{width:38vw;height:38vw;left:30vw;top:-10vh;background:radial-gradient(circle at 50% 50%, rgba(139,123,176,.30), transparent 70%);animation:drift1 28s ease-in-out infinite}
+
+/* gradient scroll-progress bar */
+.progress{position:fixed;top:0;left:0;height:3px;width:0;z-index:40;border-radius:0 3px 3px 0;
+  background:linear-gradient(90deg,var(--teal),var(--blue),var(--amber));box-shadow:0 0 14px rgba(63,191,154,.7)}
+
+/* flowing animated gradient headings */
+.sec-head h2{background:linear-gradient(90deg,#ffffff 0%, var(--teal) 30%, var(--blue) 55%, #ffffff 80%);
+  background-size:220% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 7s linear infinite}
+@keyframes shine{to{background-position:220% center}}
+.sec-head .line{background:linear-gradient(90deg,rgba(63,191,154,.6),rgba(55,138,221,.15),transparent)}
+.sec-num{font-size:14px;padding:3px 10px;border:1px solid rgba(63,191,154,.4);border-radius:999px;
+  -webkit-text-fill-color:transparent;box-shadow:0 0 16px -4px rgba(63,191,154,.5)}
+@media(prefers-reduced-motion:reduce){.sec-head h2{animation:none}}
+
+/* hero name: flowing gradient */
+.hero-name{background:linear-gradient(100deg,#ffffff 0%, #cfe0ff 30%, var(--teal) 50%, #cfe0ff 70%, #ffffff 100%);
+  background-size:220% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 9s linear infinite}
+
+/* rotating conic glow border on cards (hover) + always-on for featured */
+.card{position:relative}
+.card::after{content:"";position:absolute;inset:-1.5px;border-radius:inherit;padding:1.5px;z-index:-1;opacity:0;
+  background:conic-gradient(from var(--ang), transparent 55%, var(--teal), var(--blue), var(--amber), transparent);
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;
+  transition:opacity .35s;animation:angspin 4.5s linear infinite}
+.card:hover::after{opacity:.95}
+@keyframes angspin{to{--ang:360deg}}
+@media(prefers-reduced-motion:reduce){.card::after{animation:none}}
+
+/* stronger glass + brighter top edge */
+.wrap{box-shadow:inset 0 1px 0 rgba(255,255,255,.10), 0 40px 100px -38px rgba(0,0,0,.85), 0 0 60px -30px rgba(63,191,154,.25)}
+.wrap::after{content:"";position:absolute;left:8%;right:8%;top:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(63,191,154,.7),rgba(55,138,221,.5),transparent)}
+
+/* primary button stronger glow pulse */
+.btn.primary{animation:btnpulse 3.2s ease-in-out infinite}
+@keyframes btnpulse{0%,100%{box-shadow:0 8px 28px -10px rgba(63,191,154,.6)}50%{box-shadow:0 8px 34px -8px rgba(63,191,154,.9)}}
+@media(prefers-reduced-motion:reduce){.btn.primary{animation:none}}
+
+/* AI section: full-width flagship foundation-model card, then a 2-up grid */
+@media(min-width:821px){
+  #ai .grid.cols-2 .fm-flag h3{font-size:24px}
+}
+
+/* stat cards: gradient number + glow */
+.stat{position:relative;overflow:hidden}
+.stat .n{background:linear-gradient(120deg,var(--teal),var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent}
+.stat::after{content:"";position:absolute;inset:0;background:radial-gradient(120px 60px at 80% 0%, rgba(63,191,154,.14), transparent 70%);pointer-events:none}
+
+/* news ticker links + project media glow on hover */
+.proj-media{transition:box-shadow .4s var(--spring)}
+.proj:hover .proj-media{box-shadow:0 0 0 1px rgba(63,191,154,.4), 0 0 40px -10px rgba(63,191,154,.35)}
+
+/* ============ Lithos-inspired pass: pill nav, blur-rise intro, sensor spotlight ============ */
+/* frosted glass pill navigation */
+.navlinks{background:rgba(255,255,255,.07);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:5px 8px;gap:2px;align-items:center}
+.navlinks a{padding:7px 14px;border-radius:999px;transition:background .25s,color .25s}
+.navlinks a:hover{background:rgba(255,255,255,.14);color:var(--ink)}
+.navlinks a::after{display:none}
+
+/* cinematic staggered hero entrance: rise + de-blur */
+@keyframes heroRise{0%{opacity:0;transform:translateY(26px);filter:blur(12px)}100%{opacity:1;transform:translateY(0);filter:blur(0)}}
+.hero-copy>*{opacity:0;animation:heroRise 1.05s cubic-bezier(.16,1,.3,1) forwards}
+.hero-copy>.eyebrow{animation-delay:.15s}
+.hero-copy>.hero-name{animation-delay:.32s}
+.hero-copy>h1{animation-delay:.5s}
+.hero-copy>p{animation-delay:.68s}
+.hero-copy>.cta{animation-delay:.85s}
+@media(prefers-reduced-motion:reduce){.hero-copy>*{animation:none;opacity:1}}
+
+/* mobile-safe hero height (browser chrome doesn't clip) */
+#scene-wrap{height:100vh;height:100dvh}
+
+/* cosmic vortex finale behind Contact — REAL FOOTAGE (assets/vortex.mp4) */
+#contact{overflow:hidden;padding-top:260px;position:relative}
+.vortex-wrap{position:absolute;left:50%;top:0;transform:translateX(-50%);width:max(100%,1200px);height:78%;
+  z-index:0;pointer-events:none;overflow:hidden}
+.vortex-wrap video{width:100%;height:100%;object-fit:cover;display:block}
+.vortex-wrap::after{content:"";position:absolute;inset:0;   /* melt footage into the page black */
+  background:radial-gradient(130% 100% at 50% 26%, transparent 52%, rgba(6,8,15,.72) 100%),
+             linear-gradient(180deg, rgba(6,8,15,.25) 0%, transparent 22%, transparent 55%, rgba(6,8,15,.94) 100%)}
+#contact .wrap{z-index:1}
+
+/* dot-matrix particle media slots (sequin-board effect, à la reference video) */
+.proj-media[data-dm]{background:#04060c;border-style:solid}
+.proj-media canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.proj-media .ph-mini{position:absolute;left:10px;bottom:8px;z-index:2;font-family:var(--mono);font-size:10px;
+  color:rgba(232,236,244,.55);background:rgba(6,8,15,.55);padding:2px 9px;border-radius:6px;backdrop-filter:blur(4px)}
+
+/* ---- AI-section media cards + flagship foundation-model card ---- */
+.card-media{position:relative;margin:-22px -22px 16px;border-radius:16px 16px 0 0;overflow:hidden;
+  aspect-ratio:16/9;background:#0a1120;cursor:pointer}
+.card-media img,.card-media video{width:100%;height:100%;object-fit:cover;display:block;
+  transition:transform .6s var(--spring),filter .3s}
+.card-media:hover img,.card-media:hover video{transform:scale(1.05)}
+.card-media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(6,10,18,.55));pointer-events:none}
+.mfx{position:absolute;right:10px;bottom:9px;z-index:2;font-family:var(--mono);font-size:10.5px;letter-spacing:.03em;
+  color:var(--ink);background:rgba(6,10,18,.6);border:1px solid rgba(255,255,255,.16);border-radius:999px;
+  padding:4px 10px;backdrop-filter:blur(4px);opacity:0;transform:translateY(4px);transition:.25s}
+.card-media:hover .mfx,.proj-media:hover .mfx{opacity:1;transform:none}
+/* flagship: full-width, text beside a media panel */
+.fm-flag{grid-column:1 / -1;display:grid;grid-template-columns:1.15fr 1fr;gap:26px;align-items:center}
+.fm-flag .fm-text{min-width:0}
+.fm-side{min-width:0}
+.fm-side .card-media{margin:0;border-radius:14px;aspect-ratio:4/3}
+.credit{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);margin-top:9px;line-height:1.5}
+.credit a{color:var(--ink-dim);border-bottom:1px dotted rgba(63,191,154,.5)}
+.credit a:hover{color:var(--teal)}
+.proj-media .mfx{opacity:0}
+@media(max-width:820px){.fm-flag{grid-template-columns:1fr}.fm-side .card-media{aspect-ratio:16/9}}
+
+/* ---- shared media lightbox (AI cards + projects) ---- */
+.mlb{position:fixed;inset:0;z-index:120;display:none;background:rgba(2,4,9,.93);backdrop-filter:blur(20px);
+  flex-direction:column;align-items:center;justify-content:center;padding:34px 20px}
+.mlb.open{display:flex}
+.mlb-stage{position:relative;max-width:min(1200px,95vw);max-height:80vh;display:flex;align-items:center;justify-content:center}
+.mlb-stage img,.mlb-stage video{max-width:min(1200px,95vw);max-height:80vh;border-radius:12px;
+  box-shadow:0 40px 120px -30px rgba(0,0,0,.95);background:#0b0f18;display:block}
+.mlb-cap{font-family:var(--mono);font-size:12px;color:var(--ink-dim);margin-top:14px;text-align:center;max-width:760px;line-height:1.6}
+.mlb-cap a{color:var(--teal);border-bottom:1px dotted rgba(63,191,154,.5)}
+.mlb-x{position:fixed;top:20px;right:24px;width:40px;height:40px;border-radius:12px;border:1px solid var(--panel-line);
+  background:rgba(255,255,255,.05);color:var(--ink);font-size:17px;cursor:pointer;z-index:2}
+.mlb-x:hover{background:rgba(255,80,80,.15);border-color:rgba(255,110,110,.5)}
+.mlb-nav{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;
+  border:1px solid var(--panel-line);background:rgba(10,14,24,.7);color:var(--ink);font-size:18px;cursor:pointer;
+  backdrop-filter:blur(8px);z-index:3}
+.mlb-nav:hover{border-color:var(--teal);color:var(--teal)}
+.mlb-nav.pv{left:-4px}.mlb-nav.nx{right:-4px}
+@media(max-width:600px){.mlb-nav.pv{left:2px}.mlb-nav.nx{right:2px}}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<div class="aurora" aria-hidden="true"><span class="a1"></span><span class="a2"></span><span class="a3"></span><span class="a4"></span></div>
+
+<div id="loader"><div class="loader-ring"></div><p>Initializing orbit</p></div>
+
+<div class="topbar">
+  <div class="brand"><b>VENKATESH KOLLURU</b><span class="brand-sub"> · Applied Scientist</span></div>
+  <nav class="navlinks">
+    <a href="#news">News</a>
+    <a href="#about">About</a>
+    <a href="#ai">AI / Ecology</a>
+    <a href="#projects">Projects</a>
+    <a href="#publications">Publications</a>
+    <a href="#recognition">Recognition</a>
+    <a href="#travel">Travel</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <button class="navbtn" id="navbtn" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
+</div>
+
+<!-- mobile slide-in drawer -->
+<div class="drawer-scrim" id="drawer-scrim"></div>
+<nav class="drawer" id="drawer" aria-label="Site menu">
+  <div class="drawer-head"><span>MENU</span><button class="drawer-x" id="drawer-x" aria-label="Close menu">✕</button></div>
+  <a href="#news">News</a>
+  <a href="#about">About</a>
+  <a href="#ai">AI / Ecology</a>
+  <a href="#projects">Projects</a>
+  <a href="#publications">Publications</a>
+  <a href="#recognition">Recognition</a>
+  <a href="#travel">Travel</a>
+  <a href="#contact">Contact</a>
+</nav>
+
+<section id="scene-wrap" data-layer="0">
+  <canvas id="globe"></canvas>
+  <div class="hero-copy">
+    <div class="eyebrow"><span class="pulse"></span>Earth Observation · Landscape Ecology · Hydrology · ML &amp; Foundation Models</div>
+    <div class="hero-name">Venkatesh<br>Kolluru</div>
+    <h1>Turning satellite data <span class="accent">into decisions</span> about a changing Earth.</h1>
+    <p>Applied scientist working across Earth observation, landscape ecology, and hydrology. I operationalize geospatial models and build pipelines that turn satellite archives into flood, crop, burn-scar, and vegetation-change maps.</p>
+    <div class="cta">
+      <a class="btn primary" href="https://drive.google.com/drive/folders/1SJlFsT2NuXduC7i0eVCGNqaeeXKogGKI?usp=sharing" target="_blank" rel="noopener" id="cv-link">View CV</a>
+      <a class="btn" href="https://scholar.google.com/citations?user=7Tji1bMAAAAJ&hl=en" target="_blank" rel="noopener">Google Scholar</a>
+      <a class="btn" href="https://github.com/venkateshkolluru95" target="_blank" rel="noopener">GitHub</a>
+      <a class="btn" href="mailto:venkateshkolluru95@gmail.com">Email</a>
+    </div>
+  </div>
+  <div class="hint"><span style="color:var(--teal)">●</span> drag to spin · scroll over the globe to zoom<br>hover a satellite to pause it, then click</div>
+</section>
+
+<div id="tooltip"></div>
+<div class="layers" id="layers"></div>
+
+<div id="travel-pop"><div class="pimg"><img alt=""></div><div class="pcap"></div></div>
+
+<!-- Shared media lightbox (AI cards + projects) -->
+<div class="mlb" id="mlb" role="dialog" aria-modal="true">
+  <button class="mlb-x" id="mlb-x" aria-label="Close">✕</button>
+  <button class="mlb-nav pv" id="mlb-pv" aria-label="Previous">‹</button>
+  <div class="mlb-stage" id="mlb-stage"></div>
+  <button class="mlb-nav nx" id="mlb-nx" aria-label="Next">›</button>
+  <div class="mlb-cap" id="mlb-cap"></div>
+</div>
+
+<!-- Award lightbox -->
+<div class="aw-lb" id="aw-lb" role="dialog" aria-modal="true">
+  <button class="aw-x" id="aw-x" aria-label="Close">✕</button>
+  <div id="aw-media"></div>
+  <div class="aw-cap" id="aw-cap"></div>
+</div>
+
+<!-- GROUND TRUTH lightbox -->
+<div class="gt-lb" id="gt-lb" role="dialog" aria-modal="true">
+  <div class="gt-lb-top">
+    <div class="gt-meta" id="gt-meta"></div>
+    <button class="gt-x" id="gt-x" aria-label="Close">✕</button>
+  </div>
+  <div class="gt-lb-main">
+    <button class="gt-nav prev" id="gt-pv" aria-label="Previous">‹</button>
+    <div class="gt-frame" id="gt-frame"><div class="scan" id="gt-scan"></div></div>
+    <button class="gt-nav next" id="gt-nx" aria-label="Next">›</button>
+  </div>
+  <div class="gt-strip" id="gt-strip"></div>
+</div>
+
+<main>
+
+  <!-- NEWS -->
+  <section class="section" id="news" data-layer="6">
+    <div class="wrap reveal">
+      <div class="sec-head"><span class="sec-num">01</span><h2>News</h2><span class="line"></span></div>
+      <div class="news-vp" id="news-vp"><div class="news-track" id="news-track"></div></div>
+      <button class="news-pause" id="news-pause">⏸ pause</button>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="section" id="about" data-layer="6">
+    <div class="wrap reveal">
+      <div class="sec-head"><span class="sec-num">02</span><h2>About</h2><span class="line"></span></div>
+      <div class="about-flex">
+        <p class="lede">I am <strong>Venkatesh Kolluru, Ph.D.</strong>, a <a class="tlink" href="https://www.uah.edu/essc/laboratory-for-applied-science/faculty-staff#:~:text=Venkatesh%20Kolluru%2C%20Ph,RESEARCH%20SCIENTIST%20III" target="_blank" rel="noopener">Research Scientist III at <strong>NASA MSFC ODSI</strong> and the <strong>University of Alabama in Huntsville</strong></a>. I work across Earth observation, landscape ecology, and hydrology, combining satellite remote sensing, field data, statistical modeling, and machine learning. My current focus is operationalizing the <strong>Prithvi-EO-2.0</strong> geospatial foundation model, moving research models into production pipelines that turn petabyte-scale satellite archives into decision-ready maps for flood, crop, burn-scar, and landslide monitoring. My doctoral research attributed two decades of vegetation change across the drylands of Central Asia to its climatic and human drivers.</p>
+        <figure class="portrait" id="portrait">
+          <div class="p-ring"><img src="assets/portrait.jpg" alt="Venkatesh Kolluru" loading="lazy"
+            onerror="document.getElementById('portrait').style.display='none'"></div>
+          <figcaption>VENKATESH KOLLURU · HUNTSVILLE, AL</figcaption>
+        </figure>
+      </div>
+      <div class="statline">
+        <a class="stat" href="#experience"><div class="n">7+</div><div class="l">Years across AI &amp; EO</div></a>
+        <a class="stat" href="#publications"><div class="n" id="stat-pubs">27</div><div class="l">Peer-reviewed papers</div></a>
+        <a class="stat" href="#travel"><div class="n">5</div><div class="l">Countries of field campaigns</div></a>
+        <a class="stat" href="https://orcid.org/0000-0002-2110-5560" target="_blank" rel="noopener"><div class="n">120+</div><div class="l">Articles peer-reviewed</div></a>
+      </div>
+      <div class="grid cols-3" style="margin-top:24px">
+        <div class="card"><span class="tag">Ph.D. 2024</span><h3>Sustainability &amp; Environment</h3><p><a class="tlink" href="https://www.usd.edu/Academics/Graduate-Programs/Geospatial-Analysis" target="_blank" rel="noopener">University of South Dakota</a> · CGPA 4.0 · <a class="tlink" href="https://www.usd.edu/the-south-dakotan/usds-venkatesh-kolluru-and-justin-gray-honored-with-2025-distinguished-dissertation-awards" target="_blank" rel="noopener">2025 Distinguished Dissertation Award</a>. <a class="tlink" href="https://lcluc.umd.edu/projects/interdependent-dynamics-food-energy-and-water-kazakhstan-and-mongolia-connecting-lulcc" target="_blank" rel="noopener">Vegetation change attribution across Kazakhstan</a>.</p></div>
+        <div class="card"><span class="tag">M.Tech 2019</span><h3>Remote Sensing &amp; GIS</h3><p><a class="tlink" href="https://appmech.nitk.ac.in/" target="_blank" rel="noopener">NIT Karnataka (Surathkal)</a> · <a class="tlink" href="https://www.nitk.ac.in/best-mtech-thesis-award-to-k-venkatesh-under-the-uidance-of-drramesh-h" target="_blank" rel="noopener">ISTE Best M.Tech Thesis Award</a>. Streamflow &amp; soil-erosion modeling.</p></div>
+        <div class="card"><span class="tag">B.Tech 2016</span><h3>Civil Engineering</h3><p><a class="tlink" href="https://gmrit.edu.in/du/" target="_blank" rel="noopener">GMR Institute of Technology</a>, Andhra Pradesh, India.</p></div>
+      </div>
+
+      <h3 class="sub-h">Professional Service</h3>
+      <div class="grid cols-3" style="margin-top:14px">
+        <div class="card"><span class="tag">Editorial</span><h3>Topic Coordinator</h3><p>"GeoAI for Environmental Monitoring" special issue — <a href="https://www.frontiersin.org/research-topics/70801/geoai-for-environmental-monitoring" target="_blank" rel="noopener">Frontiers in Remote Sensing</a>.</p></div>
+        <div class="card"><span class="tag">Proposal Review</span><h3>NSF &amp; NASA panels</h3><p>Proposal reviewer for <b>NSF CAIG</b> (AI &amp; Geosciences, 2025) and <b>NASA NSPIRES</b> (2026).</p></div>
+        <div class="card"><span class="tag">Peer Review</span><h3>120+ articles reviewed</h3><p>Across 20+ journals incl. <i>Remote Sensing of Environment</i> &amp; <i>J. Hydrology</i> · <b>Best Reviewer Award</b> (IJAEOG). <a class="tlink" href="https://www.ialena.org/officers.html#:~:text=Venkatesh%20Kolluru%C2%A0%7C%202024%20to%202026" target="_blank" rel="noopener">Student Rep, IALE–North America (2024–2026)</a>.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI & FOUNDATION MODELS -->
+  <section class="section" id="ai" data-layer="1">
+    <div class="wrap reveal">
+      <div class="sec-head"><span class="sec-num">03</span><h2>AI, Remote Sensing &amp; Ecology</h2><span class="line"></span></div>
+      <p class="lede">Applying machine learning, remote sensing, and statistical modeling across Earth observation and ecology, from operationalizing foundation models to attributing long-term ecosystem change.</p>
+      <div class="grid cols-2">
+        <div class="card fm-flag">
+          <div class="fm-text">
+            <span class="tag">Foundation Models · Earth · Sun · Moon next</span>
+            <h3>Science foundation models in production</h3>
+            <p>Operationalized NASA–IBM science foundation models end to end: <b>Prithvi-EO-2.0</b> (600M parameters) for flood, burn-scar, landslide, and multi-temporal crop mapping over Harmonized Landsat–Sentinel imagery, and <b>Surya</b> for solar-flare forecasting, solar-wind prediction, and active-region segmentation from Solar Dynamics Observatory imagery. A lunar foundation model is next.</p>
+            <div class="metric">Prithvi · 97.25% crop accuracy · 88.68% flood detection · 357 eco-regions · 14 biomes</div>
+            <div class="metric">Surya · 87–97% accuracy · flares &lt;24 h ahead · solar wind +4 days · zero-shot +5 h</div>
+          </div>
+          <div class="fm-side">
+            <div class="card-media fm-media" data-media="fm"><img loading="lazy" src="assets/proj_web/prithvi_fire.jpg" alt="Prithvi-EO-2.0 burn-scar detection output"><span class="mfx">⤢ view model outputs</span></div>
+            <div class="credit">Imagery: <a href="https://science.nasa.gov/science-research/ai-foundation-model-in-orbit/" target="_blank" rel="noopener">NASA Science · AI foundation model in orbit ↗</a></div>
+          </div>
+        </div>
+        <div class="card"><div class="card-media" data-media="eco"><img loading="lazy" src="assets/proj_web/comms_paper.jpg" alt="Causal attribution framework figure"><span class="mfx">⤢ enlarge</span></div><span class="tag">Ecosystem Attribution</span><h3>What drives dryland vegetation change</h3><p>Built a multi-stage causal framework — trend analysis, Granger causality, Random Forest, and Shapley attribution — to disentangle how grazing, snow cover, climate, and human activity drove two decades of vegetation change across the drylands of Kazakhstan.</p><div class="metric"><a href="https://doi.org/10.1038/s43247-024-01587-1" target="_blank" rel="noopener">Communications Earth &amp; Environment (2024) ↗</a></div></div>
+        <div class="card"><div class="card-media" data-media="bio"><img loading="lazy" src="assets/proj_web/mongolia_steppe.jpg" alt="Mongolian steppe grassland"><span class="mfx">⤢ view methods</span></div><span class="tag">Remote Sensing of Ecosystems</span><h3>Cross-scale biomass mapping</h3><p>Fused drone and Sentinel-2 imagery with Random Forest and per-pixel uncertainty to map canopy cover and aboveground biomass across Mongolia and Kazakhstan — from 84 field sites to satellite scale.</p><div class="metric"><a href="https://doi.org/10.1016/j.rse.2026.115302" target="_blank" rel="noopener">Remote Sensing of Environment (2026) ↗</a></div></div>
+        <div class="card"><div class="card-media" data-media="red"><img loading="lazy" src="assets/proj_web/failure_modes.jpg" alt="Red-teaming failure-mode taxonomy"><span class="mfx">⤢ enlarge</span></div><span class="tag">Model Validation</span><h3>Red-teaming AI systems</h3><p>Authored a systematic red-teaming framework that surfaced <b>23 failure modes across 4 pipeline stages</b> — acquisition, preprocessing, inference, and postprocessing. Fixing these <b>deployment-level</b> issues (not the model weights) recovered end-to-end precision from 4.9% to 98.6%. Presented at AGU 2025.</p><div class="metric">23 failure modes · pipeline hardening, not model retraining · <a href="https://doi.org/10.48550/arXiv.2606.07780" target="_blank" rel="noopener">arXiv preprint ↗</a></div></div>
+        <div class="card"><div class="card-media" data-media="care"><img loading="lazy" src="assets/proj_web/closed_loop.jpg" alt="CARE six-stage agentic pipeline"><span class="mfx">⤢ enlarge</span></div><span class="tag">Agentic AI · CARE</span><h3>Closed-loop scientific workflow</h3><p>A multi-stage agent-driven pipeline spanning literature gap-finding, hypothesis formulation, workflow specification, agent-run execution, and report generation — built with the OpenAI Agents SDK and Pydantic AI.</p><div class="metric">research-to-operations automation</div></div>
+      </div>
+      <div class="chiprow">
+        <span class="chip">Python</span><span class="chip">R</span><span class="chip">PyTorch</span><span class="chip">TerraTorch</span>
+        <span class="chip">Random Forest</span><span class="chip">Structural Equation Modeling</span><span class="chip">Google Earth Engine</span>
+        <span class="chip">Remote Sensing</span><span class="chip">GDAL / rasterio</span><span class="chip">STAC / CMR</span>
+        <span class="chip">Causal Attribution</span><span class="chip">Geospatial ML</span><span class="chip">OpenAI Agents SDK</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS (left imagery + text) -->
+  <section class="section" id="projects" data-layer="2">
+    <div class="wrap reveal">
+      <div class="sec-head"><span class="sec-num">04</span><h2>Projects &amp; Platforms</h2><span class="line"></span></div>
+
+      <div class="proj">
+        <div class="proj-media" data-media="portal"><video src="assets/proj_web/portal.mp4" poster="assets/proj_web/portal_poster.jpg" muted loop playsinline preload="none"></video><span class="mfx">⤢ play full</span></div>
+        <div class="proj-body"><span class="tag">Live Platform</span><h3>R2O PRISM Portal</h3><p>End-to-end production platform serving real-time foundation-model inference for flood, crop, burn-scar, and landslide tasks — automated HLS acquisition (CMR/STAC), tiled GPU inference, and Cloud-Optimized GeoTIFF outputs, demoed to senior NASA officials.</p><div class="metric"><a href="https://explore.fm.odsi.io/" target="_blank" rel="noopener">explore.fm.odsi.io ↗</a></div></div>
+      </div>
+
+      <div class="proj">
+        <div class="proj-media" data-media="flood"><img loading="lazy" src="assets/proj_web/flood_wide.jpg" alt="19 global out-of-distribution flood events"><span class="mfx">⤢ enlarge</span></div>
+        <div class="proj-body"><span class="tag">Disaster Response · Lead author</span><h3>Global flood-mapping benchmark</h3><p>Benchmarked the foundation model across 19 globally distributed out-of-distribution flood events (Iowa 2024, Sindh Pakistan 2022, Brazil 2024, Alabama 2019…), validated against independent reference products with patch-level analysis over 79,885 patches — showing land cover and flood type govern detection limits.</p><div class="metric">Submitted · Remote Sensing of Environment · <a href="https://doi.org/10.48550/arXiv.2606.07780" target="_blank" rel="noopener">arXiv preprint ↗</a></div></div>
+      </div>
+
+      <div class="proj">
+        <div class="proj-media" data-media="sar"><img loading="lazy" src="assets/proj_web/sentinel1sar.jpg" alt="Sentinel-1 SAR composite"><span class="mfx">⤢ enlarge</span></div>
+        <div class="proj-body"><span class="tag">Open Source</span><h3>Sentinel-1 SAR processing package</h3><p>End-to-end SAR package (Python, GDAL, rasterio) for building-damage detection, processing Sentinel-1 SLC data through NASA JPL's OPERA RTC workflow, with a scene registry for reproducibility. Acquired matching Sentinel-1 SAR imagery for the MAXAR building-damage benchmark locations.</p><div class="metric"><a href="https://github.com/venkateshkolluru95" target="_blank" rel="noopener">github.com/venkateshkolluru95 ↗</a> · <a href="https://www.earthdata.nasa.gov/data/instruments/sentinel-1-c-sar" target="_blank" rel="noopener">SAR imagery: NASA Earthdata ↗</a></div></div>
+      </div>
+
+      <div class="proj">
+        <div class="proj-media" data-media="kaz"><video src="assets/proj_web/kaz_drone.mp4" poster="assets/proj_web/kaz_drone_poster.jpg" muted loop playsinline preload="none"></video><span class="mfx">⤢ play full</span></div>
+        <div class="proj-body"><span class="tag">Ph.D. Research</span><h3>Dryland vegetation attribution · Kazakhstan</h3><p>A multi-stage causal attribution framework (TSS-RESTREND, pixel-wise Granger Causality, Random Forest, Shapley) across 2.39M km² of Kazakhstan, attributing vegetation change to 10 social-environmental drivers.</p><div class="metric"><a href="https://doi.org/10.1038/s43247-024-01587-1" target="_blank" rel="noopener">Communications Earth &amp; Environment (2024) ↗</a></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section class="section" id="experience" data-layer="3">
+    <div class="wrap reveal">
+      <div class="sec-head"><span class="sec-num">05</span><h2>Experience</h2><span class="line"></span></div>
+      <p class="lede">Selected roles and field campaigns. Click any role to expand.</p>
+      <details class="xp" open><summary><div><div class="xp-when">JAN 2025 — PRESENT</div><div class="xp-role">Research Scientist III</div><div class="xp-org">NASA MSFC ODSI · University of Alabama in Huntsville</div></div><span class="xp-chev">▾</span></summary>
+        <div class="xp-body"><ul>
+          <li>Fine-tuned and deployed the <b>600M-param Prithvi-EO-2.0</b> across flood, crop, burn-scar, and landslide tasks via the production platform.</li>
+          <li>Architected a five-stage agent-driven workflow (CARE) with the OpenAI Agents SDK and Pydantic AI, automating the research-to-operations loop from literature gap-finding through experiment execution to report generation.</li>
+          <li>Operationalized the <b>Surya heliophysics foundation model</b> for solar-flare forecasting, solar-wind prediction, and active-region segmentation, with production pipelines from Solar Dynamics Observatory FITS imagery via JSOC and DRMS.</li>
+          <li>Authored a red-teaming framework for evaluating ML systems in production, identifying <b>23 failure modes across 4 pipeline stages</b>.</li>
+          <li>Designed rigorous benchmarks: flood model performance across <b>19 out-of-distribution events</b> and crop model performance over 40 test cases. Lead author, manuscript submitted to <b>Remote Sensing of Environment</b> (<a href="https://doi.org/10.48550/arXiv.2606.07780" target="_blank" rel="noopener">arXiv preprint</a>).</li>
+          <li>Built pipelines ingesting petabyte-scale satellite archives via NASA Earthdata APIs (CMR, STAC), with automated preprocessing, multi-source integration, quality control, and Cloud-Optimized outputs.</li>
+          <li>Collaborate with NASA scientists, software engineers, and IBM Research; mentor junior researchers.</li>
+        </ul></div></details>
+      <details class="xp"><summary><div><div class="xp-when">JAN 2021 — DEC 2024</div><div class="xp-role">Graduate Research Assistant</div><div class="xp-org">University of South Dakota · NASA LCLUC Project</div></div><span class="xp-chev">▾</span></summary>
+        <div class="xp-body"><ul>
+          <li>Causal attribution framework across <b>2.39M km²</b> of Kazakhstan (<a href="https://doi.org/10.1038/s43247-024-01587-1" target="_blank" rel="noopener">Communications Earth &amp; Environment, 2024</a>).</li>
+          <li>Led <b>2 international field campaigns</b> (Kazakhstan 2022, Mongolia 2023) across 84 sites.</li>
+          <li>Cross-scale sUAS–Sentinel-2 ML pipeline with per-pixel uncertainty (<a href="https://doi.org/10.1016/j.rse.2026.115302" target="_blank" rel="noopener">Remote Sensing of Environment, 2026</a>).</li>
+          <li>36 structural equation models explaining &gt;70% of NDVI variance (<a href="https://doi.org/10.1088/1748-9326/ac8c59" target="_blank" rel="noopener">Environmental Research Letters, 2022</a>).</li>
+          <li>CGPA 4.0 · <a href="https://www.usd.edu/the-south-dakotan/usds-venkatesh-kolluru-and-justin-gray-honored-with-2025-distinguished-dissertation-awards" target="_blank" rel="noopener">2025 Distinguished Dissertation Award</a>.</li>
+        </ul></div></details>
+      <details class="xp"><summary><div><div class="xp-when">2019 — 2020</div><div class="xp-role">Junior Research Fellow · Research Intern</div><div class="xp-org">IIT Kharagpur · IIT Bombay · EOMRV LLC</div></div><span class="xp-chev">▾</span></summary>
+        <div class="xp-body"><ul>
+          <li>Glacier-lake outburst risk assessment (<a href="https://www.csre.iitb.ac.in/" target="_blank" rel="noopener">IIT Bombay, CSRE</a>).</li>
+          <li>Real-time river–reservoir water-quality advisory system (<a href="https://www.iitkgp.ac.in/department/AG" target="_blank" rel="noopener">IIT Kharagpur</a>).</li>
+          <li>Biomass estimation pipelines on Google Earth Engine for client deliverables (EOMRV, 2023).</li>
+        </ul></div></details>
+    </div>
+  </section>
+
+  <!-- PUBLICATIONS -->
+  <section class="section" id="publications" data-layer="4">
+    <div class="wrap reveal">
+      <div class="sec-head"><span class="sec-num">06</span><h2>Publications</h2><span class="line"></span></div>
+      <div class="live-chip" id="oa-stats"><span class="dot"></span><span>Loading live metrics…</span></div>
+      <div class="pub-themes" id="pub-themes"></div>
+      <div class="pub-list" id="pub-list"></div>
+      <p class="lede" style="margin-top:18px;font-size:14px">Full record: <a href="https://scholar.google.com/citations?user=7Tji1bMAAAAJ&hl=en" target="_blank" rel="noopener">Google Scholar ↗</a> · <a href="https://orcid.org/0000-0002-2110-5560" target="_blank" rel="noopener">ORCID ↗</a></p>
+    </div>
+  </section>
+
+  <!-- TALKS -->
+  <section class="section" id="talks" data-layer="1">
+    <div class="wrap reveal">
+      <div class="sec-head"><span class="sec-num">07</span><h2>Talks &amp; Presentations</h2><span class="line"></span></div>
+      <div class="news-vp" id="talk-vp"><div class="news-track" id="talk-track"></div></div>
+      <button class="news-pause" id="talk-pause">⏸ pause</button>
+    </div>
+  </section>
+
+  <!-- RECOGNITION (coverflow) -->
+  <section class="section" id="recognition" data-layer="5">
+    <div class="wrap reveal">
+      <div class="sec-head"><span class="sec-num">08</span><h2>Recognition &amp; Awards</h2><span class="line"></span></div>
+      <div class="cf"><div class="cf-stage" id="cf-stage"></div></div>
+      <div class="cf-nav"><button id="cf-prev">‹</button><button id="cf-next">›</button></div>
+    </div>
+  </section>
+
+  <!-- TRAVEL / GROUND TRUTH -->
+  <section class="section" id="travel" data-layer="6">
+    <div class="wrap reveal">
+      <div class="sec-head"><span class="sec-num">09</span><h2>Ground Truth</h2><span class="line"></span></div>
+      <p class="gt-tag"><b>By day I study these landscapes through satellites. Off the clock, I go see them for myself.</b></p>
+      <p class="lede">Trips, national parks, and wanderings across five countries, each one a place I had only known as pixels before seeing it at eye level.</p>
+      <p class="gt-how"><span>Hover a polaroid</span> and the globe locks onto the site &nbsp;·&nbsp; <span>Click</span> to open the frames</p>
+      <div class="statline">
+        <div class="stat"><div class="n">13</div><div class="l">Sites</div></div>
+        <div class="stat"><div class="n">93</div><div class="l">Frames</div></div>
+        <div class="stat"><div class="n">14</div><div class="l">Clips</div></div>
+        <div class="stat"><div class="n">5</div><div class="l">Countries</div></div>
+      </div>
+      <div class="gt-grid" id="gt-grid"></div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="section" id="contact" data-layer="6">
+    <div class="vortex-wrap" aria-hidden="true">
+      <video id="vortexvid" muted loop playsinline preload="none">
+        <source src="assets/vortex.mp4" type="video/mp4"/>
+      </video>
+    </div>
+    <div class="wrap reveal">
+      <div class="sec-head"><span class="sec-num">10</span><h2>Get in Touch</h2><span class="line"></span></div>
+      <p class="lede">If your interests touch <strong>Earth observation, geospatial AI, ecosystems, or water</strong>, I would love to hear from you. Reach out to explore collaborations, exchange ideas, or open new avenues together.</p>
+      <div class="contact">
+        <a class="btn primary" href="mailto:venkateshkolluru95@gmail.com">venkateshkolluru95@gmail.com</a>
+        <a class="btn" href="https://scholar.google.com/citations?user=7Tji1bMAAAAJ&hl=en" target="_blank" rel="noopener">Google Scholar</a>
+        <a class="btn" href="https://www.linkedin.com/in/venkatesh-kolluru-855597175/" target="_blank" rel="noopener">LinkedIn</a>
+        <a class="btn" href="https://github.com/venkateshkolluru95" target="_blank" rel="noopener">GitHub</a>
+        <a class="btn" href="https://orcid.org/0000-0002-2110-5560" target="_blank" rel="noopener">ORCID</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>© 2026 Venkatesh Kolluru · Built with Three.js · Earth layers from NASA GIBS &amp; partners</footer>
+<div class="backtop" id="backtop" title="Back to top">↑</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/satellite.js/5.0.0/satellite.min.js"></script>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.module.min.js"
+}}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+
+/* ============================================================
+   DARK-COSMIC HERO: sunlit Earth (offset right) with a visible
+   day/night terminator, glowing atmosphere, starfield, orbiting
+   satellites and ground markers. Clickable objects = sections.
+   ============================================================ */
+
+const canvas = document.getElementById('globe');
+const tooltip = document.getElementById('tooltip');
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 200);
+camera.position.set(0, 0.4, 9.8);   // start pulled back; eases to camDist for a Ken Burns dolly-in on load
+
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+/* ---- lights: low ambient + strong key => day/night terminator ---- */
+scene.add(new THREE.AmbientLight(0x39507a, 0.55));
+const key = new THREE.DirectionalLight(0xffffff, 2.4);
+key.position.set(5, 2.4, 4);
+scene.add(key);
+const rim = new THREE.DirectionalLight(0x5aa6e0, 0.7);
+rim.position.set(-6, -1.5, -3);
+scene.add(rim);
+
+/* ---- starfield (now visible + twinkling) ---- */
+const starGeo = new THREE.BufferGeometry();
+const starN = 2200, starPos = new Float32Array(starN*3);
+for(let i=0;i<starN;i++){
+  const r = 36 + Math.random()*46;
+  const t = Math.random()*Math.PI*2, p = Math.acos(2*Math.random()-1);
+  starPos[i*3]   = r*Math.sin(p)*Math.cos(t);
+  starPos[i*3+1] = r*Math.sin(p)*Math.sin(t);
+  starPos[i*3+2] = r*Math.cos(p);
+}
+starGeo.setAttribute('position', new THREE.BufferAttribute(starPos,3));
+const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({color:0xcfe0ff,size:0.085,transparent:true,opacity:0.85,sizeAttenuation:true}));
+scene.add(stars);
+// a sparse layer of brighter near stars
+const star2Geo = new THREE.BufferGeometry();
+const star2N = 240, star2Pos = new Float32Array(star2N*3);
+for(let i=0;i<star2N;i++){
+  const r = 24 + Math.random()*20;
+  const t = Math.random()*Math.PI*2, p = Math.acos(2*Math.random()-1);
+  star2Pos[i*3]=r*Math.sin(p)*Math.cos(t); star2Pos[i*3+1]=r*Math.sin(p)*Math.sin(t); star2Pos[i*3+2]=r*Math.cos(p);
+}
+star2Geo.setAttribute('position', new THREE.BufferAttribute(star2Pos,3));
+const stars2 = new THREE.Points(star2Geo, new THREE.PointsMaterial({color:0xffffff,size:0.16,transparent:true,opacity:0.9}));
+scene.add(stars2);
+
+/* ---- world + system groups (offset to the right) ---- */
+const world = new THREE.Group();
+const system = new THREE.Group();
+system.add(world);
+scene.add(system);
+function layoutSystem(){
+  if(window.innerWidth > 900){
+    // big, anchored bottom-right; ~75% of the globe visible, lower-right corner cropped
+    system.position.x = 3.0; system.position.y = -2.6; system.scale.setScalar(1.85);
+  } else {
+    system.position.x = 0.7; system.position.y = -1.6; system.scale.setScalar(1.2);
+  }
+}
+layoutSystem();
+window.addEventListener('resize', layoutSystem);
+
+/* ---- Earth: NASA textures (local first, CDN fallback) ---- */
+const EARTH_R = 1.7;
+const CDN = 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/';
+const texLoader = new THREE.TextureLoader();
+texLoader.setCrossOrigin('anonymous');
+function loadTex(local, remote, onOk){
+  texLoader.load(local, onOk, undefined, ()=> texLoader.load(remote, onOk, undefined, ()=>{}));
+}
+function makeEarthTexture(){
+  const c = document.createElement('canvas'); c.width=1024; c.height=512;
+  const g = c.getContext('2d');
+  const oc = g.createLinearGradient(0,0,0,512);
+  oc.addColorStop(0,'#0a2540'); oc.addColorStop(.5,'#0d2e52'); oc.addColorStop(1,'#08203c');
+  g.fillStyle=oc; g.fillRect(0,0,1024,512);
+  g.fillStyle='#16633f';
+  const blobs=[[180,170,90,55],[260,210,70,40],[470,150,130,70],[520,230,80,50],
+    [560,300,60,90],[700,170,90,55],[760,250,70,45],[820,330,55,40],[300,330,70,45],[150,300,55,35]];
+  blobs.forEach(([x,y,rx,ry])=>{ g.beginPath(); g.ellipse(x,y,rx,ry,Math.random()*1,0,Math.PI*2); g.fill(); });
+  for(let i=0;i<600;i++){
+    g.fillStyle = Math.random()>.5 ? 'rgba(40,224,176,.07)' : 'rgba(22,99,63,.5)';
+    g.fillRect(Math.random()*1024,Math.random()*512,2,2);
+  }
+  const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+const SEG = 200;
+const SPHERE = new THREE.SphereGeometry(EARTH_R, SEG, SEG);   // dense enough for real displacement
+const earthMat  = new THREE.MeshPhongMaterial({map:makeEarthTexture(), shininess:16, specular:new THREE.Color(0x2a4f73)});
+const earth2Mat = new THREE.MeshPhongMaterial({transparent:true, opacity:0, depthWrite:false, shininess:16, specular:new THREE.Color(0x2a4f73)});
+const earth  = new THREE.Mesh(SPHERE, earthMat);
+const earth2 = new THREE.Mesh(SPHERE, earth2Mat); earth2.scale.setScalar(1.001); earth2.visible=false;
+world.add(earth); world.add(earth2);
+
+/* ---- EO data layers: the same Earth seen through different satellite products ---- */
+const LAYERS = [
+  { key:'terrain',   name:'Elevation',     sub:'hypsometric · 3D',       disp:0.16 },  // composited texture (built below)
+  { key:'night',     name:'Night lights',  sub:'VIIRS city lights',      map:'assets/earth_night.jpg',        emissive:true },
+  { key:'landcover', name:'Land cover',    sub:'MODIS IGBP classes',     map:'assets/earth_landcover_hi.png' },
+  { key:'ndvi',      name:'Vegetation',    sub:'MODIS NDVI greenness',   map:'assets/earth_ndvi_hi.png',    breathe:true },
+  { key:'weather',   name:'Weather',       sub:'GFS surface wind · live particles',   map:'assets/earth_dark.jpg', litbase:0.95, weather:true },
+  { key:'pop',       name:'Population',     sub:'world density spikes',   map:'assets/earth_day.jpg', litbase:0.6, viz:'pop' },
+  { key:'natural',   name:'Natural color', sub:'Blue Marble',            map:'assets/earth_day.jpg',          normal:true, spec:true },
+];  // Satellites layer removed (parked in _saved/removed-layers.md); Natural color takes its slot
+let curLayer = 0;
+let NORMAL_TEX=null, SPEC_TEX=null, DISP_TEX=null;
+let cloudTarget=0, cloudCur=0, weatherTarget=0, weatherCur=0;
+
+function applyLayer(mat, L){
+  if(L.tex) mat.map = L.tex;
+  mat.normalMap   = (L.normal===true) ? NORMAL_TEX : null;
+  if(L.normal===true) mat.normalScale = new THREE.Vector2(0.85,0.85);
+  mat.specularMap = (L.spec===true) ? SPEC_TEX : null;
+  mat.specular    = new THREE.Color((L.spec===true) ? 0x2a4f73 : 0x05070d);
+  mat.shininess   = (L.spec===true) ? 16 : 5;
+  mat.displacementMap   = (L.disp && DISP_TEX) ? DISP_TEX : null;
+  mat.displacementScale = L.disp || 0;
+  if(L.emissive){ mat.emissiveMap=L.tex; mat.emissive=new THREE.Color(0xffe0a8); mat.emissiveIntensity=1.5; }
+  else if(L.litbase){ mat.emissiveMap=L.tex; mat.emissive=new THREE.Color(0xffffff); mat.emissiveIntensity=L.litbase; }
+  else if(L.weather){ mat.emissiveMap=L.tex; mat.emissive=new THREE.Color(0xffffff); mat.emissiveIntensity=0.32; }
+  else if(L.breathe){ mat.emissiveMap=L.tex; mat.emissive=new THREE.Color(0x1f4012); mat.emissiveIntensity=0.0; }
+  else { mat.emissiveMap=null; mat.emissive=new THREE.Color(0x000000); mat.emissiveIntensity=0; }
+  mat.needsUpdate = true;
+}
+function refresh(){ applyLayer(earthMat, LAYERS[curLayer]); }
+texLoader.load('assets/earth_normal.jpg',   t=>{ NORMAL_TEX=t; refresh(); });
+texLoader.load('assets/earth_specular.jpg', t=>{ SPEC_TEX=t;   refresh(); });
+texLoader.load('assets/earth_topology.png', t=>{ DISP_TEX=t;   refresh(); });
+const MAXANISO = renderer.capabilities.getMaxAnisotropy();
+LAYERS.forEach(L=>{ if(!L.map) return; texLoader.load(L.map, t=>{ t.colorSpace=THREE.SRGBColorSpace; t.anisotropy=MAXANISO; t.needsUpdate=true; L.tex=t; if(L===LAYERS[curLayer]) applyLayer(earthMat, L); }); });
+
+/* Elevation layer: composite hypsometric land (ASTER color index) over bathymetry oceans */
+function buildElevationTexture(){
+  const aImg=new Image(), bImg=new Image(); let n=0;
+  aImg.crossOrigin='anonymous'; bImg.crossOrigin='anonymous';
+  function ready(){
+    const W=2048,H=1024;
+    const ca=document.createElement('canvas'); ca.width=W; ca.height=H; const ga=ca.getContext('2d');
+    ga.drawImage(aImg,0,0,W,H); const A=ga.getImageData(0,0,W,H).data;
+    const cb=document.createElement('canvas'); cb.width=W; cb.height=H; const gb=cb.getContext('2d');
+    gb.drawImage(bImg,0,0,W,H); const B=gb.getImageData(0,0,W,H).data;
+    const out=ga.createImageData(W,H), O=out.data;
+    for(let i=0;i<O.length;i+=4){
+      const br=B[i],bg=B[i+1],bb=B[i+2];
+      const isOcean=(bb>br+12 && bb>bg+4);            // blue-dominant bathymetry pixel = ocean
+      if(isOcean){ O[i]=br; O[i+1]=bg; O[i+2]=bb; }   // keep ocean depth colors
+      else { O[i]=A[i]; O[i+1]=A[i+1]; O[i+2]=A[i+2]; } // hypsometric land
+      O[i+3]=255;
+    }
+    ga.putImageData(out,0,0);
+    const tex=new THREE.CanvasTexture(ca); tex.colorSpace=THREE.SRGBColorSpace; tex.anisotropy=MAXANISO;
+    const L=LAYERS.find(x=>x.key==='terrain'); L.tex=tex;
+    if(LAYERS[curLayer]===L) applyLayer(earthMat,L);
+  }
+  aImg.onload=()=>{ if(++n===2) ready(); }; bImg.onload=()=>{ if(++n===2) ready(); };
+  aImg.src='assets/earth_hypso_land.png'; bImg.src='assets/earth_topobathy.jpg';
+}
+buildElevationTexture();
+cloudTarget = LAYERS[0].clouds ? 1 : 0;
+
+/* ---- drifting clouds (moving atmosphere) ---- */
+const cloudsMat = new THREE.MeshPhongMaterial({color:0xffffff, transparent:true, opacity:0, depthWrite:false});
+const clouds = new THREE.Mesh(new THREE.SphereGeometry(EARTH_R*1.018, 96, 96), cloudsMat);
+clouds.visible=false; world.add(clouds);
+texLoader.load('assets/earth_clouds.png', t=>{ cloudsMat.alphaMap=t; cloudsMat.needsUpdate=true; });
+
+/* ---- Lithos-style cursor spotlight: the pointer acts as a sensor swath revealing
+       NIGHT LIGHTS through a soft circle over the current layer (hero only) ---- */
+const SPOT_R = 260;
+const spotMat = new THREE.ShaderMaterial({
+  transparent:true, depthWrite:false,
+  uniforms:{ uTex:{value:null}, uMouse:{value:new THREE.Vector2(-9e4,-9e4)}, uR:{value:SPOT_R}, uOn:{value:0} },
+  vertexShader:`varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
+  fragmentShader:`varying vec2 vUv; uniform sampler2D uTex; uniform vec2 uMouse; uniform float uR,uOn;
+    void main(){
+      vec3 c = texture2D(uTex, vUv).rgb;
+      float t = distance(gl_FragCoord.xy, uMouse)/uR;
+      float a = smoothstep(1.0, 0.45, t);              // soft-edged circle (full core, feathered rim)
+      vec3 glow = c*1.7 + vec3(1.0,0.85,0.55)*pow(c,vec3(1.5))*0.8;  // warm boost so city lights pop
+      gl_FragColor = vec4(glow, a*uOn);
+    }`
+});
+const spot = new THREE.Mesh(new THREE.SphereGeometry(EARTH_R*1.003, 96, 96), spotMat);
+spot.visible=false; world.add(spot);
+const spotPx={x:-9e4,y:-9e4}, spotSm={x:-9e4,y:-9e4};
+let spotOn=0;
+const spotAllowed = !window.matchMedia('(pointer: coarse)').matches && !reduceMotion;
+/* debug: force one posed spotlight frame (headless preview) */
+window.__spotDemo=(x,y)=>{ const pr=renderer.getPixelRatio(); const nl=LAYERS.find(l=>l.key==='night');
+  if(nl&&nl.tex) spotMat.uniforms.uTex.value=nl.tex;
+  spotMat.uniforms.uMouse.value.set(x*pr,(innerHeight-y)*pr); spotMat.uniforms.uR.value=SPOT_R*pr;
+  spotMat.uniforms.uOn.value=1; spot.visible=true; renderer.render(scene,camera); return 'spot demo'; };
+
+/* ---- WEATHER layer: colored temperature field + REAL GFS wind streamlines on top ---- */
+const weatherMat = new THREE.ShaderMaterial({
+  transparent:true, depthWrite:false,
+  uniforms:{ uTime:{value:0}, uShow:{value:0} },
+  vertexShader:`varying vec3 vP; varying vec2 vUv;
+    void main(){ vP=normalize(position); vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
+  fragmentShader:`
+    varying vec3 vP; varying vec2 vUv; uniform float uTime,uShow;
+    float hash(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
+    float vnoise(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.0-2.0*f);
+      return mix(mix(hash(i),hash(i+vec2(1,0)),u.x), mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),u.x), u.y); }
+    float fbm(vec2 p){ float a=0.5,s=0.0; for(int k=0;k<5;k++){ s+=a*vnoise(p); p*=2.0; a*=0.5; } return s; }
+    vec3 ramp(float t){ // wind/temperature scale: indigo -> blue -> teal -> green -> yellow -> orange
+      vec3 c0=vec3(0.18,0.16,0.55), c1=vec3(0.13,0.38,0.80), c2=vec3(0.13,0.62,0.66),
+           c3=vec3(0.30,0.78,0.40), c4=vec3(0.93,0.88,0.30), c5=vec3(0.92,0.52,0.18);
+      vec3 c=mix(c0,c1,smoothstep(0.0,0.22,t)); c=mix(c,c2,smoothstep(0.22,0.42,t));
+      c=mix(c,c3,smoothstep(0.42,0.6,t)); c=mix(c,c4,smoothstep(0.6,0.8,t)); c=mix(c,c5,smoothstep(0.8,1.0,t)); return c; }
+    void main(){
+      float lat=vP.y;
+      vec2 uv=vUv*vec2(7.0,3.5);
+      vec2 warp=vec2(fbm(uv+vec2(uTime*0.04,0.0)), fbm(uv+vec2(5.2,1.3)-vec2(uTime*0.03,0.0)));
+      float field=fbm(uv+warp*1.6+vec2(uTime*0.05,0.0));
+      float t=clamp((1.0-abs(lat))*0.82 + (field-0.5)*0.8, 0.0, 1.0);
+      gl_FragColor=vec4(ramp(t), uShow*0.82);
+    }`
+});
+const weather = new THREE.Mesh(new THREE.SphereGeometry(EARTH_R*1.006, 128, 128), weatherMat);
+weather.visible=false; world.add(weather);
+
+/* real GFS wind grid (U/V, 1° res) from the cambecc/earth (nullschool) sample data */
+let WIND_OK=false, WG_NX=360, WG_NY=181, WG_U=null, WG_V=null;
+const WMAXSPD=20;   // m/s for speed->color normalization (lower => greener, nullschool-like)
+fetch('assets/data/gfs-wind.json').then(r=>r.json()).then(j=>{
+  const u=j.find(d=>/U-component/i.test(d.header.parameterNumberName))||j[0];
+  const v=j.find(d=>/V-component/i.test(d.header.parameterNumberName))||j[1];
+  WG_NX=u.header.nx; WG_NY=u.header.ny; WG_U=u.data; WG_V=v.data; WIND_OK=true;
+}).catch(()=>{});
+function sampleWind(lat,lon){            // bilinear; grid row0=90N, col0=0E, 1° spacing
+  if(!WIND_OK) return [Math.cos(lat*Math.PI/180*3)*8, 0];
+  const L=((lon%360)+360)%360;
+  const x=L*(WG_NX/360), y=(90-lat);
+  const x0=Math.floor(x)%WG_NX, x1=(x0+1)%WG_NX, fx=x-Math.floor(x);
+  const y0=Math.max(0,Math.min(WG_NY-1,Math.floor(y))), y1=Math.min(WG_NY-1,y0+1), fy=y-Math.floor(y);
+  const U=WG_U, V=WG_V, nx=WG_NX;
+  const u=(U[y0*nx+x0]*(1-fx)+U[y0*nx+x1]*fx)*(1-fy)+(U[y1*nx+x0]*(1-fx)+U[y1*nx+x1]*fx)*fy;
+  const v=(V[y0*nx+x0]*(1-fx)+V[y0*nx+x1]*fx)*(1-fy)+(V[y1*nx+x0]*(1-fx)+V[y1*nx+x1]*fx)*fy;
+  return [u,v];
+}
+
+/* wind particles advected by the real field, streamlines colored by wind speed */
+const PCOUNT=40000, TRAIL=13, SEGS=TRAIL-1;   // dense tier (user-approved 40k)
+const wlat=new Float32Array(PCOUNT), wlon=new Float32Array(PCOUNT), wage=new Float32Array(PCOUNT), wmax=new Float32Array(PCOUNT), wspd=new Float32Array(PCOUNT);
+const wtrail=new Float32Array(PCOUNT*TRAIL*3);
+const wPos=new Float32Array(PCOUNT*SEGS*2*3);
+const wA=new Float32Array(PCOUNT*SEGS*2);
+const wSarr=new Float32Array(PCOUNT*SEGS*2);
+let windT=0;
+function wllpos(lat,lon){ const phi=(90-lat)*Math.PI/180, th=(lon+180)*Math.PI/180, r=EARTH_R*1.012;
+  return [-r*Math.sin(phi)*Math.cos(th), r*Math.cos(phi), r*Math.sin(phi)*Math.sin(th)]; }
+function wreset(i){
+  wlat[i]=Math.asin(2*Math.random()-1)*180/Math.PI; wlon[i]=Math.random()*360-180;
+  wage[i]=0; wmax[i]=60+Math.random()*90;
+  const p=wllpos(wlat[i],wlon[i]); const b=i*TRAIL*3;
+  for(let s=0;s<TRAIL;s++){ wtrail[b+s*3]=p[0]; wtrail[b+s*3+1]=p[1]; wtrail[b+s*3+2]=p[2]; }
+}
+for(let i=0;i<PCOUNT;i++) wreset(i);
+function windStep(dt){
+  for(let i=0;i<PCOUNT;i++){
+    const uv=sampleWind(wlat[i],wlon[i]);
+    wspd[i]=Math.sqrt(uv[0]*uv[0]+uv[1]*uv[1]);
+    const cl=Math.max(0.2,Math.cos(wlat[i]*Math.PI/180));
+    wlon[i]+=(uv[0]/cl)*0.055*dt; wlat[i]+=uv[1]*0.055*dt;
+    if(wlon[i]>180)wlon[i]-=360; else if(wlon[i]<-180)wlon[i]+=360;
+    wage[i]+=dt;
+    if(wlat[i]>88||wlat[i]<-88||wage[i]>wmax[i]){ wreset(i); wspd[i]=0; continue; }
+    const b=i*TRAIL*3;
+    for(let s=0;s<TRAIL-1;s++){ wtrail[b+s*3]=wtrail[b+(s+1)*3]; wtrail[b+s*3+1]=wtrail[b+(s+1)*3+1]; wtrail[b+s*3+2]=wtrail[b+(s+1)*3+2]; }
+    const p=wllpos(wlat[i],wlon[i]);
+    wtrail[b+(TRAIL-1)*3]=p[0]; wtrail[b+(TRAIL-1)*3+1]=p[1]; wtrail[b+(TRAIL-1)*3+2]=p[2];
+  }
+  let o=0, ao=0;
+  for(let i=0;i<PCOUNT;i++){ const b=i*TRAIL*3; const sn=Math.min(1, wspd[i]/WMAXSPD);
+    for(let s=0;s<SEGS;s++){
+      wPos[o++]=wtrail[b+s*3]; wPos[o++]=wtrail[b+s*3+1]; wPos[o++]=wtrail[b+s*3+2];
+      wPos[o++]=wtrail[b+(s+1)*3]; wPos[o++]=wtrail[b+(s+1)*3+1]; wPos[o++]=wtrail[b+(s+1)*3+2];
+      wA[ao]=s/SEGS; wA[ao+1]=(s+1)/SEGS; wSarr[ao]=sn; wSarr[ao+1]=sn; ao+=2;
+    }
+  }
+  windGeo.attributes.position.needsUpdate=true; windGeo.attributes.aA.needsUpdate=true; windGeo.attributes.aS.needsUpdate=true;
+}
+const windGeo=new THREE.BufferGeometry();
+windGeo.setAttribute('position', new THREE.BufferAttribute(wPos,3));
+windGeo.setAttribute('aA', new THREE.BufferAttribute(wA,1));
+windGeo.setAttribute('aS', new THREE.BufferAttribute(wSarr,1));
+const windMat=new THREE.ShaderMaterial({
+  transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
+  uniforms:{ uShow:{value:0} },
+  vertexShader:`attribute float aA; attribute float aS; varying float vA; varying float vS;
+    void main(){ vA=aA; vS=aS; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
+  fragmentShader:`varying float vA; varying float vS; uniform float uShow;
+    void main(){
+      // nullschool-style speed ramp: blue -> teal -> green -> yellow -> orange
+      vec3 c0=vec3(0.15,0.35,0.82), c1=vec3(0.10,0.72,0.75), c2=vec3(0.35,0.85,0.30),
+           c3=vec3(0.96,0.88,0.25), c4=vec3(0.97,0.45,0.15);
+      vec3 c=mix(c0,c1,smoothstep(0.0,0.25,vS)); c=mix(c,c2,smoothstep(0.25,0.5,vS));
+      c=mix(c,c3,smoothstep(0.5,0.75,vS)); c=mix(c,c4,smoothstep(0.75,1.0,vS));
+      gl_FragColor=vec4(c, vA*vA*0.75*uShow);
+    }`
+});
+const wind=new THREE.LineSegments(windGeo, windMat);
+wind.frustumCulled=false; wind.visible=false; world.add(wind);
+windStep(1);
+
+/* ============================================================
+   EXTRA DATA LAYERS (globe.gl-style): population spikes, air-route arcs, satellites
+   Each is a Group added to `world`; a layer's `viz` key fades it in.
+   ============================================================ */
+function llv(lat,lon,alt){ const r=EARTH_R*(1+(alt||0)), phi=(90-lat)*Math.PI/180, th=(lon+180)*Math.PI/180;
+  return new THREE.Vector3(-r*Math.sin(phi)*Math.cos(th), r*Math.cos(phi), r*Math.sin(phi)*Math.sin(th)); }
+const VIZ = {};
+let satTick = 0;
+
+/* --- Population spikes (world_population.csv: lat,lng,pop) --- */
+(function(){
+  const grp=new THREE.Group(); grp.visible=false; world.add(grp);
+  VIZ.pop={obj:grp, mats:[], target:0, cur:0, max:0.95};
+  fetch('assets/data/world_population.csv').then(r=>r.text()).then(txt=>{
+    const lines=txt.trim().split('\n'); lines.shift();
+    const pos=[], col=[];
+    for(const ln of lines){
+      const c=ln.split(','); const lat=+c[0], lon=+c[1], pop=+c[2]; if(!pop) continue;
+      const h=Math.min(0.5, Math.sqrt(pop)/8500);
+      const a=llv(lat,lon,0), b=llv(lat,lon,h);
+      const t=Math.min(1,Math.sqrt(pop/1.2e7));               // YlOrRd by population
+      const r=0.55+0.45*t, g=0.92-0.72*t, bl=0.30-0.26*t;
+      pos.push(a.x,a.y,a.z, b.x,b.y,b.z);
+      col.push(r*0.35,g*0.35,bl*0.35, r,g,bl);
+    }
+    const g=new THREE.BufferGeometry();
+    g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+    g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
+    const m=new THREE.LineBasicMaterial({vertexColors:true, transparent:true, opacity:0, blending:THREE.AdditiveBlending, depthWrite:false});
+    const seg=new THREE.LineSegments(g,m); seg.frustumCulled=false; grp.add(seg); VIZ.pop.mats.push(m);
+  }).catch(()=>{});
+})();
+
+/* --- Air-route arcs (US international outbound, openflights) --- */
+if(LAYERS.some(l=>l.viz==='routes')) (function(){
+  const grp=new THREE.Group(); grp.visible=false; world.add(grp);
+  VIZ.routes={obj:grp, mats:[], target:0, cur:0, max:0.9};
+  Promise.all([
+    fetch('assets/data/airports.dat').then(r=>r.text()),
+    fetch('assets/data/routes.dat').then(r=>r.text())
+  ]).then(([ap,rt])=>{
+    const A={};
+    ap.split('\n').forEach(line=>{
+      const f=line.match(/("[^"]*"|[^,]+)/g); if(!f||f.length<8) return;
+      const iata=f[4].replace(/"/g,''); if(!iata||iata==='\\N') return;
+      A[iata]={lat:+f[6], lon:+f[7], country:f[3].replace(/"/g,'')};
+    });
+    const seen=new Set(), pos=[], col=[];
+    rt.split('\n').forEach(line=>{
+      const f=line.split(','); const s=A[f[2]], d=A[f[4]]; if(!s||!d) return;
+      if(s.country!=='United States' || d.country==='United States') return;
+      const key=f[2]+'>'+f[4]; if(seen.has(key)) return; seen.add(key);
+      const va=llv(s.lat,s.lon,0), vb=llv(d.lat,d.lon,0), ang=va.angleTo(vb), lift=0.10+0.30*(ang/Math.PI);
+      const N=28; let prev=null;
+      for(let i=0;i<=N;i++){ const t=i/N;
+        const p=new THREE.Vector3().copy(va).lerp(vb,t).normalize().multiplyScalar(EARTH_R*(1+Math.sin(t*Math.PI)*lift));
+        const cr=0.20+0.75*t, cg=0.95-0.65*t, cb=0.55-0.30*t;   // green -> red
+        if(prev){ pos.push(prev.x,prev.y,prev.z, p.x,p.y,p.z); col.push(ppc[0],ppc[1],ppc[2], cr,cg,cb); }
+        prev=p; var ppc=[cr,cg,cb];
+      }
+    });
+    const g=new THREE.BufferGeometry();
+    g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+    g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
+    const m=new THREE.LineBasicMaterial({vertexColors:true, transparent:true, opacity:0, blending:THREE.AdditiveBlending, depthWrite:false});
+    const seg=new THREE.LineSegments(g,m); seg.frustumCulled=false; grp.add(seg); VIZ.routes.mats.push(m);
+  }).catch(()=>{});
+})();
+
+/* --- Satellites (LEO, real TLE via satellite.js) --- */
+function makeSatSprite(){
+  const c=document.createElement('canvas'); c.width=c.height=64; const g=c.getContext('2d');
+  g.translate(32,32);
+  g.fillStyle='#dff0ff'; g.fillRect(-4,-6,8,12);                 // bus
+  g.fillStyle='#6fb6ff';
+  g.fillRect(-22,-4,15,8); g.fillRect(7,-4,15,8);                // solar panels
+  g.strokeStyle='rgba(220,245,255,.9)'; g.lineWidth=1.5;
+  g.strokeRect(-22,-4,15,8); g.strokeRect(7,-4,15,8);
+  g.fillStyle='#eaf6ff'; g.fillRect(-1,-12,2,6);                 // antenna
+  const t=new THREE.CanvasTexture(c); t.colorSpace=THREE.SRGBColorSpace; return t;
+}
+const SAT={ pts:null, mat:null, recs:[], n:0, group:new THREE.Group() };
+SAT.group.visible=false; world.add(SAT.group);
+VIZ.sats={obj:SAT.group, mats:[], target:0, cur:0, max:1};
+if(LAYERS.some(l=>l.viz==='sats')) (function(){   // parked: no layer uses satellites now, skip the 700KB TLE fetch
+  fetch('assets/data/space-track-leo.txt').then(r=>r.text()).then(txt=>{
+    const L=txt.split('\n'); const recs=[];
+    for(let i=0;i+2<L.length;i+=3){
+      const l1=L[i+1], l2=L[i+2];
+      if(!l1||!l2||l1[0]!=='1'||l2[0]!=='2') continue;
+      recs.push([l1.trim(), l2.trim()]);
+    }
+    SAT._raw=recs; SAT.n=recs.length;
+    const pos=new Float32Array(SAT.n*3);
+    const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.BufferAttribute(pos,3));
+    const m=new THREE.PointsMaterial({map:makeSatSprite(), color:0xffffff, size:0.13, sizeAttenuation:true, transparent:true, opacity:0, depthWrite:false, alphaTest:0.12});
+    SAT.pts=new THREE.Points(g,m); SAT.pts.frustumCulled=false; SAT.group.add(SAT.pts);
+    SAT.mat=m; VIZ.sats.mats.push(m);
+    if(window.satellite){ SAT.recs=recs.map(([a,b])=>{try{return window.satellite.twoline2satrec(a,b)}catch(e){return null}}); updateSats(0); }
+  }).catch(()=>{});
+})();
+function updateSats(minOffset){
+  if(!window.satellite || !SAT.pts) return;
+  if(!SAT.recs.length && SAT._raw){ SAT.recs=SAT._raw.map(([a,b])=>{try{return window.satellite.twoline2satrec(a,b)}catch(e){return null}}); }
+  const now=new Date(Date.now()+ (minOffset||0)*60000);
+  const gmst=window.satellite.gstime(now);
+  const arr=SAT.pts.geometry.attributes.position.array; const s=EARTH_R/6371;
+  for(let i=0;i<SAT.recs.length;i++){
+    const rec=SAT.recs[i]; let ok=false;
+    if(rec){ const pv=window.satellite.propagate(rec, now);
+      if(pv && pv.position && isFinite(pv.position.x)){ const gd=window.satellite.eciToEcf(pv.position, gmst);
+        if(isFinite(gd.x)){ arr[i*3]=gd.x*s; arr[i*3+1]=gd.z*s; arr[i*3+2]=-gd.y*s; ok=true; } } }
+    if(!ok){ arr[i*3]=arr[i*3+1]=arr[i*3+2]=0; }
+  }
+  SAT.pts.geometry.attributes.position.needsUpdate=true;
+}
+
+/* crossfade between layers + retarget clouds/ice */
+let fade=null;
+function setLayer(i){
+  if(i===curLayer || !LAYERS[i]) return;
+  applyLayer(earth2Mat, LAYERS[i]);
+  earth2Mat.opacity=0; earth2.visible=true;
+  cloudTarget   = LAYERS[i].clouds ? 1 : 0;
+  weatherTarget = LAYERS[i].weather ? 1 : 0;
+  for(const k in VIZ) VIZ[k].target = (LAYERS[i].viz===k) ? 1 : 0;
+  fade={ to:i, t:0 };
+}
+window.setEarthLayer = setLayer;
+/* debug helpers for headless preview (rAF paused there) */
+window.__renderLayer = (i, tsec)=>{
+  if(fade){ earth2.visible=false; earth2Mat.opacity=0; fade=null; }
+  applyLayer(earthMat, LAYERS[i]); curLayer=i;
+  const t = tsec||0;
+  cloudTarget   = cloudCur   = LAYERS[i].clouds?1:0;
+  weatherTarget = weatherCur = LAYERS[i].weather?1:0;
+  cloudsMat.opacity = cloudCur*0.85; clouds.visible = cloudCur>0;
+  weather.visible = false;   // colored field retired — nullschool look is dark globe + wind only
+  windMat.uniforms.uShow.value = weatherCur; wind.visible = weatherCur>0;
+  if(LAYERS[i].weather){ windT=t; for(let k=0;k<TRAIL+8;k++){ windStep(1); } }
+  clouds.rotation.y = t*0.02;
+  if(LAYERS[i].breathe) earthMat.emissiveIntensity = 0.14 + 0.10*Math.sin(t*1.3);
+  for(const k in VIZ){ const V=VIZ[k]; V.target=V.cur=(LAYERS[i].viz===k)?1:0; V.obj.visible=V.cur>0.01; V.mats.forEach(m=>m.opacity=V.cur*V.max); }
+  if(LAYERS[i].viz==='sats') updateSats(0);
+  renderer.render(scene,camera);
+  return 'rendered '+LAYERS[i].key;
+};
+
+/* ---- lat/lon -> vector ---- */
+function ll(lat,lon,r){
+  const phi=(90-lat)*Math.PI/180, th=(lon+180)*Math.PI/180;
+  return new THREE.Vector3(-r*Math.sin(phi)*Math.cos(th), r*Math.cos(phi), r*Math.sin(phi)*Math.sin(th));
+}
+
+/* ---- clickable registry ---- */
+const clickable = [];
+function register(obj, label, sub, target){
+  obj.userData = {label, sub, target, baseScale:obj.scale.x};
+  clickable.push(obj);
+}
+
+/* ---- ground markers (eye / aperture style) ---- */
+function marker(lat,lon,color,label,sub,target){
+  const pos = ll(lat,lon,EARTH_R*1.012);
+  // filled pupil (also the click target)
+  const pupil = new THREE.Mesh(new THREE.CircleGeometry(0.038,24),
+    new THREE.MeshBasicMaterial({color, side:THREE.DoubleSide}));
+  pupil.position.copy(pos); pupil.lookAt(0,0,0);
+  // static iris ring
+  const iris = new THREE.Mesh(new THREE.RingGeometry(0.056,0.07,30),
+    new THREE.MeshBasicMaterial({color, transparent:true, opacity:.95, side:THREE.DoubleSide}));
+  iris.position.copy(pos); iris.lookAt(0,0,0);
+  // pulsing outer beacon ring
+  const ring = new THREE.Mesh(new THREE.RingGeometry(0.085,0.1,30),
+    new THREE.MeshBasicMaterial({color, transparent:true, opacity:.5, side:THREE.DoubleSide}));
+  ring.position.copy(pos); ring.lookAt(0,0,0);
+  world.add(ring); world.add(iris); world.add(pupil);
+  pupil.userData.ring = ring;
+  register(pupil,label,sub,target);
+  return pupil;
+}
+marker(48.0,67.0,0x3fbf9a,'Kazakhstan campaign','Experience','#experience');
+marker(46.8,103.0,0x3fbf9a,'Mongolia campaign','Experience','#experience');
+marker(34.7,-86.6,0x378add,'Huntsville · NASA MSFC','About','#about');
+marker(20.6,78.9,0xf2a93b,'India','Home','#contact');
+
+/* ---- satellites ---- */
+const sats = [];
+function makeSatellite(label,sub,target,radius,incl,speed,phase,color){
+  const g = new THREE.Group();
+  const busMat = new THREE.MeshStandardMaterial({color:0xe6b94e, metalness:.85, roughness:.35, emissive:0x3a2a08, emissiveIntensity:.35});
+  const bus = new THREE.Mesh(new THREE.BoxGeometry(0.2,0.2,0.28), busMat); g.add(bus);
+  const trimMat = new THREE.MeshStandardMaterial({color:0x8a6a1e, metalness:.7, roughness:.5});
+  const trim = new THREE.Mesh(new THREE.BoxGeometry(0.205,0.06,0.285), trimMat); trim.position.y=-0.07; g.add(trim);
+  const wingMat = new THREE.MeshStandardMaterial({color:0x16306a, metalness:.5, roughness:.35, emissive:color, emissiveIntensity:.22});
+  const frameMat = new THREE.MeshStandardMaterial({color:0x9fb2d8, metalness:.8, roughness:.3});
+  function wing(side){
+    const w = new THREE.Group();
+    const boom = new THREE.Mesh(new THREE.CylinderGeometry(0.012,0.012,0.16,8), frameMat);
+    boom.rotation.z=Math.PI/2; boom.position.x=side*0.18; w.add(boom);
+    for(let k=0;k<3;k++){
+      const cell = new THREE.Mesh(new THREE.BoxGeometry(0.13,0.004,0.17), wingMat);
+      cell.position.set(side*(0.30+k*0.135),0,0); w.add(cell);
+      const fr = new THREE.Mesh(new THREE.BoxGeometry(0.135,0.008,0.012), frameMat);
+      fr.position.set(side*(0.30+k*0.135),0,0); w.add(fr);
+    }
+    return w;
+  }
+  g.add(wing(1)); g.add(wing(-1));
+  const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.01,0.01,0.1,6), frameMat); mast.position.set(0,0.16,0.08); g.add(mast);
+  const dish = new THREE.Mesh(new THREE.SphereGeometry(0.07,16,8,0,Math.PI*2,0,Math.PI/2.4),
+    new THREE.MeshStandardMaterial({color:0xdfe8f7, metalness:.6, roughness:.3, side:THREE.DoubleSide}));
+  dish.position.set(0,0.215,0.08); dish.rotation.x=Math.PI; g.add(dish);
+  const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.06,0.1,16),
+    new THREE.MeshStandardMaterial({color:0x1b2840, metalness:.7, roughness:.4})); barrel.position.y=-0.16; g.add(barrel);
+  const lens = new THREE.Mesh(new THREE.CircleGeometry(0.045,20), new THREE.MeshBasicMaterial({color}));
+  lens.position.y=-0.211; lens.rotation.x=-Math.PI/2; g.add(lens);
+  const hit = new THREE.Mesh(new THREE.SphereGeometry(0.42,12,12), new THREE.MeshBasicMaterial({visible:false})); g.add(hit);
+  g.scale.setScalar(1);
+  register(hit,label,sub,target); hit.userData.group=g; hit.userData.kind='sat';
+  const orbit = {g, radius, incl, speed, phase, hit}; sats.push(orbit); system.add(g);
+  const pts=[]; for(let i=0;i<=128;i++){const a=i/128*Math.PI*2; pts.push(new THREE.Vector3(Math.cos(a)*radius,0,Math.sin(a)*radius));}
+  const ring = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),
+    new THREE.LineBasicMaterial({color,transparent:true,opacity:.32}));
+  ring.rotation.x=incl; system.add(ring); orbit.ring=ring;
+  return orbit;
+}
+makeSatellite('Prithvi-EO-2.0','AI & Foundation Models','#ai',2.9,0.5,0.16,0,0x3fbf9a);
+makeSatellite('Projects & Platforms','PRISM · SAR · benchmarks','#projects',3.5,-0.7,0.12,2.1,0x378add);
+makeSatellite('Publications','28 papers · Scholar','#publications',3.15,0.95,0.14,4.0,0x8b7bb0);
+
+/* ---- downlink beam: sat #1 -> Huntsville ---- */
+const downGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(),new THREE.Vector3()]);
+const downlink = new THREE.Line(downGeo,new THREE.LineBasicMaterial({color:0x378add,transparent:true,opacity:0}));
+system.add(downlink);
+
+/* ============================================================
+   INTERACTION
+   ============================================================ */
+const ray = new THREE.Raycaster();
+ray.params.Points = {threshold:0.2};
+const mouse = new THREE.Vector2();
+let dragging=false, lastX=0, lastY=0;
+let targetRotY=0, targetRotX=0, curRotY=0, curRotX=0;
+let camDist=7.2, hovered=null, paused=false, orbitClock=0;
+
+function resize(){
+  const w=window.innerWidth, h=window.innerHeight; if(!w||!h) return;
+  renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix();
+}
+window.addEventListener('resize',resize);
+if(window.ResizeObserver){ new ResizeObserver(resize).observe(document.body); }
+
+function ptr(e){
+  const r=canvas.getBoundingClientRect();
+  const x=(e.touches?e.touches[0].clientX:e.clientX);
+  const y=(e.touches?e.touches[0].clientY:e.clientY);
+  mouse.x=((x-r.left)/r.width)*2-1; mouse.y=-((y-r.top)/r.height)*2+1;
+  return {x,y};
+}
+let downPos=null;
+function onDown(e){dragging=true; const p=ptr(e); lastX=p.x; lastY=p.y; downPos=p;}
+function onMove(e){
+  const p=ptr(e);
+  spotPx.x=p.x; spotPx.y=p.y;
+  if(dragging){
+    targetRotY += (p.x-lastX)*0.006; targetRotX += (p.y-lastY)*0.006;
+    targetRotX = Math.max(-0.8,Math.min(0.8,targetRotX)); lastX=p.x; lastY=p.y;
+  }
+  ray.setFromCamera(mouse,camera);
+  const hits = ray.intersectObjects(clickable,false);
+  const tpop=document.getElementById('travel-pop');
+  if(hits.length){
+    const obj=hits[0].object; canvas.style.cursor='pointer';
+    if(hovered!==obj){hovered=obj;}
+    paused=true;
+    if(obj.userData.travel){                       // travel pin → photo popup instead of text tooltip
+      tooltip.style.opacity='0';
+      tpop.querySelector('.pimg img').src=obj.userData.pop;
+      tpop.querySelector('.pcap').textContent=obj.userData.label+' · '+obj.userData.sub;
+      tpop.style.opacity='1'; tpop.style.left=p.x+'px'; tpop.style.top=p.y+'px';
+    } else {
+      tpop.style.opacity='0';
+      tooltip.style.opacity='1'; tooltip.style.left=p.x+'px'; tooltip.style.top=p.y+'px';
+      tooltip.innerHTML = obj.userData.label + '<span class="t-sub">'+obj.userData.sub+' →</span>';
+    }
+  } else {
+    canvas.style.cursor= dragging?'grabbing':'grab'; hovered=null; paused=false; tooltip.style.opacity='0'; tpop.style.opacity='0';
+  }
+}
+function onUp(e){
+  dragging=false;
+  if(downPos){
+    const p=ptr(e.changedTouches?{touches:e.changedTouches}:e);
+    const moved=Math.hypot(p.x-downPos.x,p.y-downPos.y);
+    if(moved<6){
+      ray.setFromCamera(mouse,camera);
+      const hits=ray.intersectObjects(clickable,false);
+      if(hits.length){
+        const ud=hits[0].object.userData;
+        if(ud.travel){ gtFly(ud.site); gtOpen(ud.site,0); }          // travel pin → lightbox
+        else document.querySelector(ud.target)?.scrollIntoView({behavior:'smooth'});
+      }
+    }
+  }
+  downPos=null;
+}
+/* mousedown on WINDOW (not canvas) so the topbar/overlays can't swallow satellite clicks;
+   guarded so real UI (links, buttons, panels) still works normally */
+window.addEventListener('mousedown',e=>{
+  if(e.target.closest('a,button,summary,input,select,textarea,.layers,.topbar nav,main,footer,.backtop')) return;
+  if(!heroInView() && !hovered) return;   // drag/click only in hero, or anywhere when pointing at a satellite/marker
+  onDown(e);
+});
+window.addEventListener('mousemove',onMove);
+window.addEventListener('mouseup',onUp);
+canvas.addEventListener('touchstart',e=>{onDown(e);},{passive:true});
+canvas.addEventListener('touchmove',e=>{onMove(e);},{passive:true});
+canvas.addEventListener('touchend',e=>{onUp(e);},{passive:true});
+/* Globe interaction rule:
+   - HERO in view: drag-rotate + wheel-zoom (only when pointer is over the globe, on the right).
+   - Other sections: globe just auto-rotates as a background; scrolling never rotates/zooms it. */
+camDist = 7.2;
+const ZOOM_MIN = 5.4, ZOOM_MAX = 9.0;
+function heroInView(){ return window.scrollY < (window.innerHeight||800)*0.55; }
+canvas.addEventListener('wheel', e=>{
+  if(heroInView() && e.clientX > window.innerWidth*0.46){   // pointer over the globe
+    e.preventDefault();
+    camDist = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, camDist + e.deltaY*0.0022));
+  }
+}, {passive:false});
+
+/* ---- GROUND TRUTH: travel photo-pins + polaroids + lightbox (manifest-driven) ----
+   declared BEFORE the animation loop starts — animate() reads gtActive/travelGroup/gtRing */
+const travelGroup=new THREE.Group(); travelGroup.visible=false; world.add(travelGroup);
+let GT_SITES=[];
+const gtFmt=(la,lo)=>`${Math.abs(la).toFixed(2)}°${la>=0?'N':'S'} ${Math.abs(lo).toFixed(2)}°${lo>=0?'E':'W'}`;
+const gtCover=s=>`assets/travel_web/${s.slug}/${s.cover?'thumb/'+s.cover:s.coverPoster}`;
+
+/* pulsing crosshair reticle for the active site */
+const gtRing=(()=>{ const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');
+  g.strokeStyle='rgba(63,191,154,.95)';g.lineWidth=3;g.beginPath();g.arc(32,32,26,0,7);g.stroke();
+  g.lineWidth=2;[[6,32,16,32],[48,32,58,32],[32,6,32,16],[32,48,32,58]].forEach(([a,b,x,y])=>{g.beginPath();g.moveTo(a,b);g.lineTo(x,y);g.stroke();});
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true,opacity:0,depthTest:true}));
+  sp.scale.setScalar(0.3); travelGroup.add(sp); return sp; })();
+let gtActive=-1, gtPulse=0;
+
+/* rotate the globe so a site faces the camera (nearest-angle so auto-rotate doesn't unwind) */
+function gtFly(i){
+  const s=GT_SITES[i]; if(!s) return; gtActive=i; gtPulse=0;
+  gtRing.position.copy(ll(s.lat,s.lon,EARTH_R*1.03)); gtRing.material.opacity=1;
+  let ry=-((s.lon+180)*Math.PI/180)+Math.PI*0.5;
+  ry += Math.round((targetRotY-ry)/(2*Math.PI))*2*Math.PI;      // shortest path
+  targetRotY=ry;
+  targetRotX=Math.max(-0.8,Math.min(0.8,s.lat*Math.PI/180*0.72));
+}
+
+fetch('assets/travel_web/manifest.json',{cache:'no-store'}).then(r=>r.json()).then(j=>{
+  GT_SITES=j.sites;
+  GT_SITES.forEach((s,i)=>{
+    const pos=ll(s.lat,s.lon,EARTH_R*1.012);
+    const pupil=new THREE.Mesh(new THREE.CircleGeometry(0.034,20), new THREE.MeshBasicMaterial({color:0xf2a93b,side:THREE.DoubleSide}));
+    pupil.position.copy(pos); pupil.lookAt(0,0,0);
+    const ring=new THREE.Mesh(new THREE.RingGeometry(0.066,0.08,24), new THREE.MeshBasicMaterial({color:0xf2a93b,transparent:true,opacity:.6,side:THREE.DoubleSide}));
+    ring.position.copy(pos); ring.lookAt(0,0,0);
+    travelGroup.add(ring); travelGroup.add(pupil);
+    pupil.userData={label:s.name, sub:`${s.photos.length+s.videos.length} frames · view`, travel:true, site:i, baseScale:1, ring,
+      pop:gtCover(s)};
+    clickable.push(pupil);
+  });
+  renderGroundTruth();
+}).catch(()=>{});
+
+/* ============================================================
+   ANIMATION LOOP
+   ============================================================ */
+const clock = new THREE.Clock();
+function animate(){
+  requestAnimationFrame(animate);
+  const t = clock.getElapsedTime();
+  const dt = reduceMotion?0:1;
+  if(!paused && !reduceMotion) orbitClock += 1/60;
+  // layer crossfade
+  if(fade){
+    fade.t += 1/45;
+    const e = Math.min(1, fade.t);
+    earth2Mat.opacity = e;
+    if(e>=1){ applyLayer(earthMat, LAYERS[fade.to]); earth2.visible=false; earth2Mat.opacity=0; curLayer=fade.to; fade=null; }
+  }
+  if(!dragging && !reduceMotion && !paused) targetRotY += 0.0016;
+  curRotY += (targetRotY-curRotY)*0.08; curRotX += (targetRotX-curRotX)*0.08;
+  world.rotation.y = curRotY; world.rotation.x = curRotX;
+
+  clickable.forEach(o=>{
+    if(o.userData.ring){
+      const s=1+Math.sin(t*2+o.position.x*3)*0.25;
+      o.userData.ring.scale.setScalar(s); o.userData.ring.material.opacity=0.5-(s-1)*0.6;
+    }
+  });
+  if(gtActive>=0 && travelGroup.visible){        // ground-truth reticle lock
+    gtPulse+=0.04; gtRing.scale.setScalar(0.26+Math.sin(gtPulse)*0.05); gtRing.material.rotation+=0.008;
+  }
+  sats.forEach((s,i)=>{
+    const a = s.phase + orbitClock*s.speed*dt;
+    const ca=Math.cos(a), sa=Math.sin(a);
+    // same transform as the orbit ring (flat circle in XZ, then rotated about X by incl)
+    const x = ca*s.radius;
+    const y = -sa*s.radius*Math.sin(s.incl);
+    const z =  sa*s.radius*Math.cos(s.incl);
+    s.g.position.set(x,y,z); s.g.rotation.y=-a; s.g.rotation.z=Math.sin(orbitClock*0.5+i)*0.15;
+  });
+  const hunts = clickable.find(o=>o.userData.label.includes('Huntsville'));
+  if(hunts){
+    const sp = sats[0].g.position.clone();
+    const hv = system.worldToLocal(hunts.getWorldPosition(new THREE.Vector3()));
+    downGeo.setFromPoints([sp,hv]); downGeo.attributes.position.needsUpdate=true;
+    downlink.material.opacity = 0.14+0.14*(0.5+0.5*Math.sin(t*3));
+  }
+  clickable.forEach(o=>{
+    const isSat = o.userData.kind==='sat'; const node = isSat?o.userData.group:o;
+    const base = isSat?1:(o.userData.baseScale||1); const target=(o===hovered)?base*1.35:base;
+    node.scale.x += (target-node.scale.x)*0.2; node.scale.y=node.scale.z=node.scale.x;
+  });
+  camera.position.z += (camDist-camera.position.z)*0.08;
+  stars.rotation.y = t*0.006; stars2.rotation.y = t*0.004;
+  stars2.material.opacity = 0.7+0.3*Math.sin(t*1.5);
+
+  // drifting clouds (moving atmosphere) — fade toward target + slow independent spin
+  cloudCur += (cloudTarget-cloudCur)*0.06;
+  cloudsMat.opacity = cloudCur*0.85; clouds.visible = cloudCur>0.01;
+  if(!reduceMotion) clouds.rotation.y += 0.00045;
+  // animated weather — dim wash + real GFS wind streamlines
+  weatherCur += (weatherTarget-weatherCur)*0.06;
+  const won = weatherCur>0.01;
+  weather.visible = false;   // colored field retired — nullschool look is dark globe + wind only
+  windMat.uniforms.uShow.value = weatherCur; wind.visible = won;
+  if(won && !reduceMotion){ windT = t; windStep(1); }
+
+  // extra data layers (population / routes / satellites) fade in/out
+  for(const k in VIZ){ const V=VIZ[k];
+    V.cur += (V.target-V.cur)*0.08; V.obj.visible = V.cur>0.01;
+    V.mats.forEach(m=>{ m.opacity = V.cur*V.max; });
+  }
+  if(VIZ.sats.cur>0.01 && !reduceMotion){ satTick++; if(satTick%3===0) updateSats(satTick*0.03); }
+  // vegetation "breathing" — NDVI greens pulse gently
+  if(LAYERS[curLayer].breathe && !reduceMotion) earthMat.emissiveIntensity = 0.14 + 0.10*Math.sin(t*1.3);
+
+  // cursor sensor-spotlight (hero only, mouse pointers, not on the night layer itself)
+  if(!spotMat.uniforms.uTex.value){ const nl=LAYERS.find(l=>l.key==='night'); if(nl&&nl.tex) spotMat.uniforms.uTex.value=nl.tex; }
+  const wantSpot = spotAllowed && heroInView() && LAYERS[curLayer].key!=='night' && spotPx.x>-9e3;
+  spotOn += ((wantSpot?1:0)-spotOn)*0.08;
+  spot.visible = spotOn>0.02 && !!spotMat.uniforms.uTex.value;
+  if(spot.visible){
+    spotSm.x += (spotPx.x-spotSm.x)*0.1; spotSm.y += (spotPx.y-spotSm.y)*0.1;   // trailing ease (lerp .1)
+    const pr=renderer.getPixelRatio();
+    spotMat.uniforms.uMouse.value.set(spotSm.x*pr,(window.innerHeight-spotSm.y)*pr);
+    spotMat.uniforms.uR.value=SPOT_R*pr; spotMat.uniforms.uOn.value=spotOn;
+  }
+
+  renderer.render(scene,camera);
+}
+resize(); animate();
+
+window.addEventListener('load',()=>{ setTimeout(()=>document.getElementById('loader').classList.add('done'),500); });
+setTimeout(()=>document.getElementById('loader').classList.add('done'),2500);
+
+/* ---- manual layer switcher (also updated by the scroll observer) ---- */
+const layersEl = document.getElementById('layers');
+layersEl.innerHTML = '<span class="lab">Earth layer</span>' +
+  LAYERS.map((L,i)=>`<button data-i="${i}"${i===0?' class="active"':''} title="${L.sub}">${L.name}</button>`).join('');
+function activateLayer(i){ setLayer(i); [...layersEl.querySelectorAll('button')].forEach(x=>x.classList.toggle('active', +x.dataset.i===i));
+  const ab=layersEl.querySelector('button.active');   /* keep active chip visible in the mobile scroll bar */
+  if(ab && layersEl.scrollWidth>layersEl.clientWidth+4) ab.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'});
+}
+layersEl.addEventListener('click', e=>{ const b=e.target.closest('button'); if(b) activateLayer(+b.dataset.i); });
+
+/* ---- per-section Earth-layer swap on scroll (centre-band trigger) ---- */
+const io=new IntersectionObserver(es=>{
+  es.forEach(e=>{ if(e.isIntersecting){
+    activateLayer(+e.target.dataset.layer);
+    travelGroup.visible = (e.target.id==='travel');
+    // the vortex owns the finale: fade the globe + switcher out on Contact
+    const finale = (e.target.id==='contact');
+    document.getElementById('globe').style.opacity = finale ? '0' : '1';
+    layersEl.style.opacity = finale ? '0' : '1';
+    layersEl.style.pointerEvents = finale ? 'none' : 'auto';
+  }});
+},{rootMargin:'-45% 0px -45% 0px', threshold:0});
+document.querySelectorAll('[data-layer]').forEach(s=>io.observe(s));
+
+/* ---- reveal on scroll + back-to-top ---- */
+const ro=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('in'); }),{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
+const backtop=document.getElementById('backtop');
+backtop.onclick=()=>scrollTo({top:0,behavior:'smooth'});
+addEventListener('scroll',()=>backtop.classList.toggle('show', scrollY>700),{passive:true});
+
+/* ============================================================
+   CONTENT LAYER: data.json + live OpenAlex publications (themed)
+   ============================================================ */
+const ORCID='0000-0002-2110-5560', EMAIL='venkateshkolluru95@gmail.com';
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let newsData=[], talkData=[], awardData=[];
+
+/* bounded auto-scroll ticker (publications-style): native scrollbar, single copy of
+   content, auto-advances to the bottom, holds, then rewinds to the top and repeats.
+   Any manual scroll (wheel / touch / scrollbar drag) pauses auto for a beat. */
+function initTicker(vpId, btnId, speed){
+  const vp=document.getElementById(vpId), btn=document.getElementById(btnId);
+  if(!vp) return;
+  let paused=false, holdUntil=0, acc=0;
+  const hold=ms=>{ holdUntil=performance.now()+ms; };
+  ['wheel','touchmove','mousedown'].forEach(ev=>vp.addEventListener(ev,()=>hold(2600),{passive:true}));
+  if(btn) btn.onclick=()=>{ paused=!paused; btn.textContent=paused?'▶ play':'⏸ pause'; };
+  (function step(){
+    if(!paused && performance.now()>holdUntil && !reduceMotion){
+      const max=vp.scrollHeight-vp.clientHeight;
+      if(max>2){
+        if(vp.scrollTop>=max-1){ hold(1600); vp.scrollTo({top:0,behavior:'smooth'}); }  // rewind to top
+        else { acc+=speed; if(acc>=1){ vp.scrollTop+=acc|0; acc-=acc|0; } }
+      }
+    }
+    requestAnimationFrame(step);
+  })();
+}
+function renderNews(){
+  const tr=document.getElementById('news-track'); if(!tr) return;
+  tr.innerHTML=(newsData||[]).map(n=>`<div class="news-item"><span class="d">${esc(n.date)}</span><span class="t">${n.html||esc(n.text||'')}</span></div>`).join('');
+  initTicker('news-vp','news-pause',0.35);
+}
+
+/* talks — same bounded ticker (40+ presentations incoming) */
+function renderTalks(){
+  const tr=document.getElementById('talk-track'); if(!tr) return;
+  tr.innerHTML=(talkData||[]).map(t=>{
+    const role = t.role==='lead' ? '<span class="rl lead">PRESENTER</span>' : '<span class="rl co">CO-AUTHOR</span>';
+    const tag = t.kind==='oral' ? '<span class="rl oral">ORAL</span>' : (t.kind==='upcoming' ? '<span class="rl up">UPCOMING</span>' : '');
+    const title = t.link ? `<a class="tk" href="${esc(t.link)}" target="_blank" rel="noopener">${esc(t.title)} ↗</a>` : esc(t.title);
+    return `<div class="talk">${title}${role}${tag}<br><span class="v">${esc(t.venue)}</span></div>`;
+  }).join('');
+  initTicker('talk-vp','talk-pause',0.3);
+}
+
+/* recognition coverflow */
+let cfIdx=0, cfCards=[];
+function layoutCF(){ const shift=innerWidth<480?108:150;   /* tighter fan on phones */
+  cfCards.forEach((c,i)=>{ const d=i-cfIdx, ad=Math.abs(d);
+  c.style.transform=`translateX(${d*shift}px) translateZ(${-ad*140}px) rotateY(${-d*22}deg) scale(${d===0?1.05:0.86})`;
+  c.style.opacity= ad>2?0:1; c.style.zIndex=100-ad; c.classList.toggle('center',d===0); }); }
+const AW_BASE='assets/awards_web/';
+function awThumb(a){ return a.mtype==='video' ? AW_BASE+a.poster : AW_BASE+a.media; }
+function renderCoverflow(){
+  const stage=document.getElementById('cf-stage'); if(!stage) return;
+  stage.innerHTML=(awardData||[]).map((a,i)=>{
+    const media = a.media ? `<div class="imgph"><img loading="lazy" src="${awThumb(a)}" alt="${esc(a.title)}"></div>` : `<div class="imgph"></div>`;
+    const play = a.mtype==='video' ? '<div class="play">▶</div>' : '';
+    const exp = a.media ? `<div class="exp">${a.mtype==='video'?'▶ play':'⤢ view'}</div>` : '';
+    return `<div class="cf-card" data-i="${i}">${media}${play}${exp}<div class="yr">${esc(a.year)}</div><div class="ti">${esc(a.title)}</div><div class="org">${esc(a.org||'')}</div></div>`;
+  }).join('');
+  cfCards=[...stage.querySelectorAll('.cf-card')];
+  cfCards.forEach((c,i)=>c.onclick=()=>{ if(i===cfIdx){ awOpen(i); } else { cfIdx=i; layoutCF(); } });
+  layoutCF();
+}
+document.getElementById('cf-prev').onclick=()=>{cfIdx=Math.max(0,cfIdx-1);layoutCF();};
+document.getElementById('cf-next').onclick=()=>{cfIdx=Math.min(cfCards.length-1,cfIdx+1);layoutCF();};
+let cfAuto=setInterval(()=>{ if(cfCards.length){ cfIdx=(cfIdx+1)%cfCards.length; layoutCF(); } }, 4500);
+
+/* award lightbox: click the centre card to view full-res photo / certificate / play video */
+const awLB=document.getElementById('aw-lb'), awMedia=document.getElementById('aw-media'), awCap=document.getElementById('aw-cap');
+function awOpen(i){
+  const a=awardData[i]; if(!a||!a.media) return;
+  clearInterval(cfAuto);
+  awMedia.innerHTML = a.mtype==='video'
+    ? `<video src="${AW_BASE+a.media}" poster="${AW_BASE+a.poster}" controls autoplay loop playsinline></video>`
+    : `<img src="${AW_BASE+a.media}" alt="${esc(a.title)}">`;
+  awCap.innerHTML=`<span class="yr">${esc(a.year)}</span> · <b>${esc(a.title)}</b>${a.org?' · '+esc(a.org):''}${a.link?` · <a href="${esc(a.link)}" target="_blank" rel="noopener">source ↗</a>`:''}`;
+  awLB.classList.add('open'); document.body.style.overflow='hidden';
+}
+function awClose(){ awLB.classList.remove('open'); document.body.style.overflow='';
+  awMedia.querySelectorAll('video').forEach(v=>v.pause()); awMedia.innerHTML='';
+  cfAuto=setInterval(()=>{ if(cfCards.length){ cfIdx=(cfIdx+1)%cfCards.length; layoutCF(); } }, 4500); }
+document.getElementById('aw-x').addEventListener('click',awClose);
+awLB.addEventListener('click',e=>{ if(e.target===awLB) awClose(); });
+addEventListener('keydown',e=>{ if(e.key==='Escape'&&awLB.classList.contains('open')) awClose(); });
+window.__awOpen=awOpen;
+
+/* publications — themed filter + DOIs */
+const THEMES=[
+  {key:'fm',     name:'Foundation Models & Operational AI', re:/prithvi|foundation model|wxc|surya|flood|burn|landslide|red.?team|operational|deep learning|segmentation|benchmark/i},
+  {key:'veg',    name:'Drylands Vegetation & Biomass',      re:/biomass|grass|graz|vegetation|ndvi|kazakhstan|mongolia|dryland|canopy|sweetclover|species|productivity|greenness|degradation|livestock/i},
+  {key:'hydro',  name:'Hydrology & Streamflow',             re:/stream ?flow|river|runoff|erosion|reservoir|hydrolog|water|basin|flow/i},
+  {key:'precip', name:'Precipitation & Climate',            re:/precipitation|rainfall|drought|reanalysis|climat|meteorolog/i},
+  {key:'lulc',   name:'Land Cover, Carbon & Agriculture',   re:/land ?cover|land use|carbon|tillage|cover crop|agro|crop|life cycle|rubber|nature-based/i}
+];
+function themeOf(p){ const s=(p.title||'')+' '+(p.venue||''); for(const t of THEMES){ if(t.re.test(s)) return t.key; } return 'lulc'; }
+let allPubs=[], curTheme='all';
+function pubRow(p){
+  const badge=p.status?`<span class="badge">${esc(p.status)}</span>`:'';
+  const cites=(p.cites>0)?`<span class="cites">· cited ${p.cites}×</span>`:'';
+  const doi=p.doi?` <a href="${esc(p.doi)}" target="_blank" rel="noopener">DOI ↗</a>`:'';
+  const venue=p.venue?` <span class="j">${esc(p.venue)}</span>.`:'';
+  const auth=p.authors?`${esc(p.authors)} `:'';
+  return `<div class="pub"><div class="yr">${esc(p.year||'—')}</div><div class="meta">${auth}<b>${esc(p.title)}</b>.${venue}${badge}${doi}${cites}</div></div>`;
+}
+function renderPubs(){ const el=document.getElementById('pub-list');
+  const list=curTheme==='all'?allPubs:allPubs.filter(p=>p.theme===curTheme);
+  el.innerHTML=list.map(pubRow).join('')||'<p class="lede" style="font-size:14px">No papers in this theme yet.</p>'; }
+function renderThemes(){ const el=document.getElementById('pub-themes'); const c={}; allPubs.forEach(p=>c[p.theme]=(c[p.theme]||0)+1);
+  el.innerHTML=[`<button data-th="all" class="active">All · ${allPubs.length}</button>`]
+    .concat(THEMES.filter(t=>c[t.key]).map(t=>`<button data-th="${t.key}">${t.name} · ${c[t.key]}</button>`)).join('');
+  el.onclick=e=>{const b=e.target.closest('button');if(!b)return;curTheme=b.dataset.th;[...el.children].forEach(x=>x.classList.toggle('active',x===b));renderPubs();}; }
+async function fetchOAPubs(){
+  const url=`https://api.openalex.org/works?filter=author.orcid:${ORCID},type:article&sort=publication_date:desc&per-page=200&mailto=${encodeURIComponent(EMAIL)}&select=title,publication_year,doi,primary_location,cited_by_count`;
+  const r=await fetch(url); if(!r.ok) throw 0; const j=await r.json();
+  return (j.results||[]).filter(w=>w.title).map(w=>({title:w.title,year:w.publication_year,doi:w.doi,venue:w.primary_location?.source?.display_name||'',cites:w.cited_by_count||0}));
+}
+async function fetchOAStats(){ const r=await fetch(`https://api.openalex.org/authors/orcid:${ORCID}?mailto=${encodeURIComponent(EMAIL)}&select=works_count,cited_by_count,summary_stats`); if(!r.ok) throw 0; return r.json(); }
+function dedupe(featured,fetched){ const norm=s=>(s||'').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,60);
+  const seen=new Set(featured.map(p=>p.doi?p.doi.toLowerCase():norm(p.title)));
+  return fetched.filter(p=>{const k=p.doi?p.doi.toLowerCase():norm(p.title); if(seen.has(k)||seen.has(norm(p.title)))return false; seen.add(k); return true;}); }
+async function loadPubs(data){
+  const featured=data.publications_featured||[]; const statsEl=document.getElementById('oa-stats'); let merged;
+  /* metrics come from Google Scholar (curated in data.json — OpenAlex undercounts);
+     the paper LIST itself still updates live via OpenAlex */
+  const gs=data.scholar;
+  const gsChip=gs?`<span class="dot"></span><span><a href="https://scholar.google.com/citations?user=${gs.user}&hl=en" target="_blank" rel="noopener" style="color:inherit">Google Scholar · ${gs.citations}+ citations · h-index ${gs.hindex} · i10 ${gs.i10}</a> — list updates live via OpenAlex</span>`:null;
+  try{ const fetched=await fetchOAPubs(); if(!fetched.length) throw 0; merged=[...featured,...dedupe(featured,fetched)];
+    if(gsChip){ statsEl.innerHTML=gsChip; }
+    else{ try{const s=await fetchOAStats(); statsEl.innerHTML=`<span class="dot"></span><span>Live via OpenAlex · ${s.works_count} works · ${s.cited_by_count} citations · h-index ${s.summary_stats?.h_index??'—'}</span>`;}
+      catch{ statsEl.innerHTML=`<span class="dot"></span><span>Live via OpenAlex</span>`; } }
+  }catch(e){ merged=[...featured,...(data.publications_fallback||[])];
+    statsEl.innerHTML=gsChip||`<span class="dot" style="background:var(--amber);box-shadow:0 0 8px var(--amber)"></span><span>Showing curated list (live metrics unavailable)</span>`; }
+  allPubs=merged.map(p=>({...p, theme:themeOf(p)})); renderThemes(); renderPubs();
+  /* keep the About "Peer-reviewed papers" stat in sync with the publications list —
+     updates automatically as new papers land in OpenAlex (fallback: the static HTML value) */
+  const sp=document.getElementById('stat-pubs');
+  const nPub=allPubs.filter(p=>!p.status).length;   // exclude under-review/submitted featured items
+  if(sp && nPub){ sp.dataset.raw=String(nPub); sp.textContent=String(nPub); }
+}
+
+/* ---- GROUND TRUTH: polaroid grid + immersive lightbox ---- */
+function renderGroundTruth(){
+  const el=document.getElementById('gt-grid'); if(!el) return;
+  const TILTS=[-2.4,1.8,-1.2,2.6,-3,1.4,-1.8,2.2,-2.8,1.2,-1.5,2.8,-2];
+  el.innerHTML=GT_SITES.map((s,i)=>`
+    <div class="gt-card" data-i="${i}" style="--tilt:${TILTS[i%TILTS.length]}deg">
+      <div class="under u1"></div><div class="under u2"></div>
+      <div class="gt-pol">
+        <span class="gt-badge">${s.photos.length?`${s.photos.length}📷`:''}${s.videos.length?`<span class="vd">${s.videos.length}▸</span>`:''}</span>
+        <div class="gt-ph"><img loading="lazy" src="${gtCover(s)}" alt="${esc(s.name)}"></div>
+        <div class="gt-cap"><span class="nm">${esc(s.name)}</span><span class="co">${gtFmt(s.lat,s.lon)}</span></div>
+      </div>
+    </div>`).join('');
+  el.querySelectorAll('.gt-card').forEach(c=>{
+    c.addEventListener('mouseenter',()=>gtFly(+c.dataset.i));
+    c.addEventListener('click',()=>gtOpen(+c.dataset.i,0));
+  });
+}
+const gtLB=document.getElementById('gt-lb'), gtFrame=document.getElementById('gt-frame'),
+      gtScan=document.getElementById('gt-scan'), gtStrip=document.getElementById('gt-strip'),
+      gtMeta=document.getElementById('gt-meta');
+let gtS=0, gtI=0, gtItems=[];
+const gtMedia=s=>[...s.photos.map(p=>({t:'img',src:p})), ...s.videos.map(v=>({t:'vid',src:v.src,poster:v.poster}))];
+function gtOpen(si,mi){
+  gtS=si; gtItems=gtMedia(GT_SITES[si]); gtI=mi;
+  gtLB.classList.add('open'); document.body.style.overflow='hidden';
+  gtStrip.innerHTML=gtItems.map((m,j)=>`<div class="gt-th" data-j="${j}">
+      <img loading="lazy" src="assets/travel_web/${GT_SITES[si].slug}/${m.t==='img'?'thumb/'+m.src:m.poster}">
+      ${m.t==='vid'?'<span class="play">▶</span>':''}</div>`).join('');
+  gtStrip.querySelectorAll('.gt-th').forEach(t=>t.addEventListener('click',()=>gtShow(+t.dataset.j)));
+  gtShow(mi,true);
+}
+function gtShow(j,first){
+  gtI=(j+gtItems.length)%gtItems.length;
+  const s=GT_SITES[gtS], m=gtItems[gtI];
+  gtFrame.querySelectorAll('img,video').forEach(x=>{if(x.tagName==='VIDEO')x.pause();x.remove();});
+  let el;
+  if(m.t==='img'){el=document.createElement('img');el.src=`assets/travel_web/${s.slug}/${m.src}`;
+    if(!reduceMotion)el.classList.add('kb');}
+  else{el=document.createElement('video');el.src=`assets/travel_web/${s.slug}/${m.src}`;
+    el.poster=`assets/travel_web/${s.slug}/${m.poster}`;el.controls=true;el.muted=true;el.autoplay=true;el.loop=true;el.playsInline=true;}
+  gtFrame.insertBefore(el,gtScan);
+  if(!first&&!reduceMotion){gtScan.classList.remove('go');void gtScan.offsetWidth;gtScan.classList.add('go');}
+  gtMeta.innerHTML=`<span class="tl">GROUND TRUTH</span> · SITE ${String(gtS+1).padStart(2,'0')}/${String(GT_SITES.length).padStart(2,'0')} · <b>${esc(s.name).toUpperCase()}</b> · ${gtFmt(s.lat,s.lon)} · FRAME ${gtI+1}/${gtItems.length}`;
+  gtStrip.querySelectorAll('.gt-th').forEach((t,k)=>t.classList.toggle('on',k===gtI));
+  gtStrip.querySelector('.gt-th.on')?.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'});
+  [gtI+1,gtI-1].forEach(k=>{const n=gtItems[(k+gtItems.length)%gtItems.length];
+    if(n.t==='img'){const im=new Image();im.src=`assets/travel_web/${s.slug}/${n.src}`;}});
+}
+function gtClose(){gtLB.classList.remove('open');document.body.style.overflow='';
+  gtFrame.querySelectorAll('video').forEach(v=>v.pause());}
+document.getElementById('gt-x').addEventListener('click',gtClose);
+document.getElementById('gt-pv').addEventListener('click',()=>gtShow(gtI-1));
+document.getElementById('gt-nx').addEventListener('click',()=>gtShow(gtI+1));
+gtLB.addEventListener('click',e=>{if(e.target===gtLB)gtClose();});
+addEventListener('keydown',e=>{if(!gtLB.classList.contains('open'))return;
+  if(e.key==='Escape')gtClose();else if(e.key==='ArrowRight')gtShow(gtI+1);else if(e.key==='ArrowLeft')gtShow(gtI-1);});
+let gtTx=0;gtLB.addEventListener('touchstart',e=>gtTx=e.touches[0].clientX,{passive:true});
+gtLB.addEventListener('touchend',e=>{const d=e.changedTouches[0].clientX-gtTx;if(Math.abs(d)>50)gtShow(gtI+(d<0?1:-1));},{passive:true});
+window.__gtOpen=gtOpen; window.__gtShow=gtShow; window.__gtFly=gtFly;
+
+async function boot(){
+  let data={}; try{ const r=await fetch('data.json',{cache:'no-store'}); if(r.ok) data=await r.json(); }catch(e){}
+  newsData=data.news||[]; talkData=data.talks||[]; awardData=data.awards||[];
+  renderNews(); renderTalks(); renderCoverflow(); loadPubs(data);
+}
+boot();
+
+/* email buttons: copy to clipboard with visible feedback (mailto often does nothing) */
+document.querySelectorAll('a[href^="mailto:"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    e.preventDefault();
+    const restore=a.textContent;
+    (navigator.clipboard?.writeText(EMAIL) || Promise.reject()).then(()=>{
+      a.textContent='✓ copied — '+EMAIL;
+      setTimeout(()=>{ a.textContent=restore; },1600);
+    }).catch(()=>{ location.href=a.getAttribute('href'); });   // fallback: real mailto
+  });
+});
+
+/* gradient scroll-progress bar */
+const progEl=document.getElementById('progress');
+function updateProgress(){ const h=document.documentElement.scrollHeight-innerHeight; progEl.style.width=(h>0?(scrollY/h*100):0)+'%'; }
+addEventListener('scroll',updateProgress,{passive:true}); updateProgress();
+
+/* count-up stats when the About stats scroll into view */
+function countUp(el){
+  const raw=el.dataset.raw||el.textContent.trim(); el.dataset.raw=raw;
+  const m=raw.match(/^([\d.]+)(.*)$/); if(!m){return;} const target=parseFloat(m[1]), suffix=m[2], dec=(m[1].split('.')[1]||'').length;
+  if(reduceMotion){ el.textContent=raw; return; }
+  let t0=null; const dur=1200;
+  function f(ts){ if(!t0)t0=ts; const p=Math.min(1,(ts-t0)/dur); const e=1-Math.pow(1-p,3);
+    el.textContent=(target*e).toFixed(dec)+suffix; if(p<1)requestAnimationFrame(f); else el.textContent=raw; }
+  requestAnimationFrame(f);
+}
+const statIO=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.querySelectorAll('.stat .n').forEach(countUp); statIO.unobserve(e.target); } }),{threshold:.4});
+document.querySelectorAll('.statline').forEach(s=>statIO.observe(s));
+
+/* ============================================================
+   DOT-MATRIX PARTICLE SLOTS (reference-video effect):
+   Earth textures rendered as a twinkling sequin grid whose lower
+   rows dissolve into falling sparkle particles.
+   ============================================================ */
+const DM=[];
+function initDotMatrix(el){
+  const src=el.dataset.dm; if(!src) return;
+  const cvs=document.createElement('canvas'); el.prepend(cvs);
+  const ctx=cvs.getContext('2d');
+  const img=new Image();
+  img.onload=()=>{
+    const r=el.getBoundingClientRect();
+    const W=cvs.width=Math.max(200,r.width|0), H=cvs.height=Math.max(150,r.height|0);
+    const step=6, gw=(W/step)|0, gh=(H/step)|0;
+    const oc=document.createElement('canvas'); oc.width=gw; oc.height=gh;
+    const og=oc.getContext('2d');
+    const s=Math.max(gw/img.width, gh/img.height);
+    og.drawImage(img,(gw-img.width*s)/2,(gh-img.height*s)/2,img.width*s,img.height*s);
+    const d=og.getImageData(0,0,gw,gh).data;
+    const dots=[];
+    for(let y=0;y<gh;y++)for(let x=0;x<gw;x++){
+      const i=(y*gw+x)*4, R=d[i],G=d[i+1],B=d[i+2];
+      const lum=(R*.299+G*.587+B*.114)/255;
+      if(lum<0.055) continue;                              // keep space black
+      dots.push({x:x*step+step/2, y:y*step+step/2, R,G,B, lum,
+        ph:Math.random()*6.283, tw:0.6+Math.random()*1.6,
+        fall:(y>gh*0.6 && Math.random()<0.14), fy:Math.random()*H*0.35, vs:0.25+Math.random()*0.6});
+    }
+    DM.push({cvs,ctx,W,H,dots,on:false});
+  };
+  img.src=src;
+}
+document.querySelectorAll('.proj-media[data-dm]').forEach(initDotMatrix);
+const dmIO=new IntersectionObserver(es=>es.forEach(e=>{
+  const inst=DM.find(m=>m.cvs.parentElement===e.target); if(inst) inst.on=e.isIntersecting;
+}),{threshold:.05});
+document.querySelectorAll('.proj-media[data-dm]').forEach(el=>dmIO.observe(el));
+function dmFrame(now){
+  for(const m of DM){
+    if(!m.on && !reduceMotion) continue;
+    const {ctx,W,H,dots}=m; const t=now*0.001;
+    ctx.clearRect(0,0,W,H);
+    for(const p of dots){
+      let a=(0.45+0.55*(0.5+0.5*Math.sin(t*p.tw+p.ph)))*(0.35+0.65*p.lum);
+      let y=p.y;
+      if(p.fall && !reduceMotion){
+        p.fy+=p.vs; const span=H*0.45; if(p.fy>span) p.fy=0;
+        y=p.y+p.fy; a*=Math.max(0,1-p.fy/span)*0.9;
+      }
+      if(reduceMotion) a=0.35+0.65*p.lum;
+      ctx.fillStyle=`rgba(${p.R},${p.G},${p.B},${a.toFixed(3)})`;
+      if(p.lum>0.62){ ctx.fillRect(p.x-2.2,y-0.7,4.4,1.4); ctx.fillRect(p.x-0.7,y-2.2,1.4,4.4); }  // sparkle cross
+      else ctx.fillRect(p.x-0.95,y-0.95,1.9,1.9);
+    }
+    if(reduceMotion) m.on=false;    // static single frame under reduced motion
+  }
+  requestAnimationFrame(dmFrame);
+}
+requestAnimationFrame(dmFrame);
+/* debug: force one posed dot-matrix frame (headless preview) */
+window.__dmDemo=(t)=>{ DM.forEach(m=>m.on=true); const now=(t||4)*1000;
+  for(const m of DM){ const {ctx,W,H,dots}=m; ctx.clearRect(0,0,W,H);
+    for(const p of dots){ let a=(0.45+0.55*(0.5+0.5*Math.sin(now*0.001*p.tw+p.ph)))*(0.35+0.65*p.lum); let y=p.y;
+      if(p.fall){ const span=H*0.45; const fy=(p.fy+now*0.02*p.vs)%span; y=p.y+fy; a*=Math.max(0,1-fy/span)*0.9; }
+      ctx.fillStyle=`rgba(${p.R},${p.G},${p.B},${a.toFixed(3)})`;
+      if(p.lum>0.62){ ctx.fillRect(p.x-2.2,y-0.7,4.4,1.4); ctx.fillRect(p.x-0.7,y-2.2,1.4,4.4); }
+      else ctx.fillRect(p.x-0.95,y-0.95,1.9,1.9); } }
+  return 'dm demo, instances='+DM.length; };
+
+/* ============================================================
+   MEDIA LIGHTBOX — AI-section cards + project cards.
+   Each clickable [data-media] key maps to an array of frames
+   {t:'img'|'vid', src, cap}. Images zoom; videos autoplay/loop.
+   ============================================================ */
+const NASA_CREDIT='Imagery: <a href="https://science.nasa.gov/science-research/ai-foundation-model-in-orbit/" target="_blank" rel="noopener">NASA Science ↗</a>';
+const MEDIA={
+  fm:[
+    {t:'img',src:'proj_web/prithvi_fire.jpg', cap:'Prithvi-EO-2.0 · burn-scar mapping over the Carrizo Plain. '+NASA_CREDIT},
+    {t:'img',src:'proj_web/prithvi_fire_1.jpg', cap:'Prithvi-EO-2.0 · burn-scar segmentation output. '+NASA_CREDIT},
+    {t:'vid',src:'proj_web/helio.mp4', cap:'Surya · Solar Dynamics Observatory EUV imagery driving flare & solar-wind forecasting. '+NASA_CREDIT},
+  ],
+  eco:[{t:'img',src:'proj_web/comms_paper.jpg', cap:'Three-stage causal attribution framework · Communications Earth & Environment (2024)'}],
+  bio:[{t:'img',src:'proj_web/rse_paper.jpg', cap:'Field-to-satellite workflow: sUAS plots → landscape-scale biomass · Remote Sensing of Environment (2026)'}],
+  red:[{t:'img',src:'proj_web/failure_modes.jpg', cap:'Red-teaming taxonomy · 23 failure modes across acquisition, preprocessing, inference & postprocessing'}],
+  care:[{t:'img',src:'proj_web/closed_loop.jpg', cap:'CARE · multi-stage agentic research-to-operations pipeline'}],
+  portal:[{t:'vid',src:'proj_web/portal.mp4', cap:'R2O PRISM Portal · live foundation-model inference, demoed to NASA officials'}],
+  flood:[{t:'img',src:'proj_web/flood_wide.jpg', cap:'19 globally distributed out-of-distribution flood events · 76,824.8 km² total footprint'}],
+  sar:[{t:'img',src:'proj_web/sentinel1sar.jpg', cap:'Sentinel-1 SAR composite. Imagery: <a href="https://www.earthdata.nasa.gov/data/instruments/sentinel-1-c-sar" target="_blank" rel="noopener">NASA Earthdata · Sentinel-1C SAR ↗</a>'}],
+  kaz:[{t:'vid',src:'proj_web/kaz_drone.mp4', cap:'Field campaign · flying a drone to collect sUAS imagery for cross-scale biomass and vegetation mapping'}],
+};
+const mlb=document.getElementById('mlb'), mStage=document.getElementById('mlb-stage'), mCap=document.getElementById('mlb-cap');
+let mItems=[], mIdx=0;
+function mShow(i){
+  mIdx=(i+mItems.length)%mItems.length; const m=mItems[mIdx];
+  mStage.querySelectorAll('video').forEach(v=>v.pause());
+  mStage.innerHTML = m.t==='vid'
+    ? `<video src="assets/${m.src}" controls autoplay loop muted playsinline></video>`
+    : `<img src="assets/${m.src}" alt="">`;
+  mCap.innerHTML = (mItems.length>1?`<b style="color:var(--ink)">${mIdx+1}/${mItems.length}</b> · `:'')+(m.cap||'');
+  document.getElementById('mlb-pv').style.display=document.getElementById('mlb-nx').style.display=mItems.length>1?'':'none';
+}
+function mOpen(key,start){ const arr=MEDIA[key]; if(!arr||!arr.length) return;
+  mItems=arr; mlb.classList.add('open'); document.body.style.overflow='hidden'; mShow(start||0); }
+function mClose(){ mlb.classList.remove('open'); document.body.style.overflow='';
+  mStage.querySelectorAll('video').forEach(v=>v.pause()); mStage.innerHTML=''; }
+document.getElementById('mlb-x').addEventListener('click',mClose);
+document.getElementById('mlb-pv').addEventListener('click',()=>mShow(mIdx-1));
+document.getElementById('mlb-nx').addEventListener('click',()=>mShow(mIdx+1));
+mlb.addEventListener('click',e=>{ if(e.target===mlb) mClose(); });
+addEventListener('keydown',e=>{ if(!mlb.classList.contains('open'))return;
+  if(e.key==='Escape')mClose(); else if(e.key==='ArrowRight')mShow(mIdx+1); else if(e.key==='ArrowLeft')mShow(mIdx-1); });
+/* wire every media tile (AI cards + project cards); ignore clicks on real links */
+document.querySelectorAll('[data-media]').forEach(el=>{
+  el.style.cursor='pointer';
+  el.addEventListener('click',e=>{ if(e.target.closest('a'))return; mOpen(el.dataset.media,0); });
+});
+/* autoplay inline project videos (muted loop) while on screen — PRISM portal + Kazakhstan drone */
+document.querySelectorAll('.proj-media[data-media] video').forEach(vid=>{
+  const pio=new IntersectionObserver(es=>es.forEach(e=>{
+    if(e.isIntersecting && !reduceMotion){ vid.play().catch(()=>{}); } else vid.pause();
+  }),{threshold:.35}); pio.observe(vid);
+});
+window.__mOpen=mOpen;
+
+/* ---- mobile nav drawer ---- */
+(function(){
+  const btn=document.getElementById('navbtn'), drawer=document.getElementById('drawer'), scrim=document.getElementById('drawer-scrim');
+  if(!btn) return;
+  const open=()=>{ drawer.classList.add('open'); scrim.classList.add('open'); btn.setAttribute('aria-expanded','true'); };
+  const close=()=>{ drawer.classList.remove('open'); scrim.classList.remove('open'); btn.setAttribute('aria-expanded','false'); };
+  btn.addEventListener('click',()=>drawer.classList.contains('open')?close():open());
+  scrim.addEventListener('click',close);
+  document.getElementById('drawer-x').addEventListener('click',close);
+  drawer.querySelectorAll('a').forEach(a=>a.addEventListener('click',close));
+  addEventListener('keydown',e=>{ if(e.key==='Escape') close(); });
+})();
+
+/* ============================================================
+   COSMIC VORTEX FINALE (reference video): slowly swirling spiral
+   disk with a cyan core, drawn behind the Contact section.
+   ============================================================ */
+(function(){
+  const cvs=document.getElementById('vortex'); if(!cvs) return;
+  const ctx=cvs.getContext('2d');
+  const pr=Math.min(window.devicePixelRatio||1,1.5);
+  const W=1200,H=640; cvs.width=W*pr; cvs.height=H*pr; ctx.scale(pr,pr);
+  const CX=W/2, CY=H*0.30, MAXR=560, SQUASH=0.62;   // squash = disk viewed at an angle
+  const P=[];
+  for(let i=0;i<1500;i++){
+    const r=42+Math.pow(Math.random(),0.72)*MAXR;
+    const arm=Math.random()<0.5?0:Math.PI;                       // two spiral arms
+    const th=2.3*Math.log(r/40)+arm+(Math.random()-0.5)*0.85;
+    P.push({r,th, sp:1.4*Math.pow(50/(50+r),1.1)+0.03, sz:0.5+Math.random()*1.4, tw:Math.random()*6.283});
+  }
+  const stars=Array.from({length:90},()=>({x:Math.random()*W,y:Math.random()*H,ph:Math.random()*6.283,s:0.5+Math.random()*1.2}));
+  function vcol(r,a){
+    if(r<110) return `rgba(190,235,255,${a.toFixed(3)})`;
+    if(r<240) return `rgba(125,195,235,${(a*0.85).toFixed(3)})`;
+    if(r<400) return `rgba(85,140,200,${(a*0.6).toFixed(3)})`;
+    return `rgba(60,95,150,${(a*0.42).toFixed(3)})`;
+  }
+  function vdraw(t,dt){
+    ctx.clearRect(0,0,W,H);
+    const g=ctx.createRadialGradient(CX,CY,0,CX,CY,150);
+    g.addColorStop(0,'rgba(150,220,255,0.30)'); g.addColorStop(0.5,'rgba(90,160,220,0.12)'); g.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=g; ctx.fillRect(CX-160,CY-160,320,320);
+    ctx.globalCompositeOperation='lighter';
+    for(const p of P){
+      p.th+=p.sp*dt;
+      const Ls=p.sp*0.30+0.02;                                    // streak length follows speed
+      const x0=CX+Math.cos(p.th-Ls)*p.r, y0=CY+Math.sin(p.th-Ls)*p.r*SQUASH;
+      const x1=CX+Math.cos(p.th)*p.r,    y1=CY+Math.sin(p.th)*p.r*SQUASH;
+      const a=(0.22+0.40*(0.5+0.5*Math.sin(t*1.5+p.tw)))*Math.max(0.15,1-p.r/MAXR);
+      ctx.strokeStyle=vcol(p.r,a); ctx.lineWidth=p.sz;
+      ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x1,y1); ctx.stroke();
+    }
+    ctx.globalCompositeOperation='source-over';
+    for(const s of stars){ const a=0.22+0.5*(0.5+0.5*Math.sin(t*0.8+s.ph));
+      ctx.fillStyle=`rgba(220,235,255,${a.toFixed(3)})`; ctx.fillRect(s.x,s.y,s.s,s.s); }
+  }
+  let vOn=false, vLast=0;
+  new IntersectionObserver(es=>es.forEach(e=>vOn=e.isIntersecting),{threshold:.05}).observe(document.getElementById('contact'));
+  (function vloop(now){
+    const t=now*0.001, dt=Math.min(0.05,(now-vLast)*0.001||0.016); vLast=now;
+    if(vOn && !reduceMotion) vdraw(t,dt);
+    requestAnimationFrame(vloop);
+  })(0);
+  if(reduceMotion) vdraw(3,0);
+  window.__vortexDemo=()=>{ vdraw(4,0.016); const d=ctx.getImageData(0,0,cvs.width,cvs.height).data;
+    let lit=0; for(let i=3;i<d.length;i+=64) if(d[i]>10) lit++; return 'vortex lit='+lit; };
+})();
+
+/* ---- real-footage vortex behind Contact: lazy-load + play only when visible ---- */
+(function(){
+  const vv=document.getElementById('vortexvid'); if(!vv) return;
+  if(reduceMotion) return;                       // keep it dark & still for reduced motion
+  let loaded=false;
+  new IntersectionObserver(es=>es.forEach(e=>{
+    if(e.isIntersecting){ if(!loaded){ vv.load(); loaded=true; } vv.play().catch(()=>{}); }
+    else vv.pause();
+  }),{rootMargin:'400px 0px'}).observe(document.getElementById('contact'));
+})();
+</script>
+</body>
+</html>

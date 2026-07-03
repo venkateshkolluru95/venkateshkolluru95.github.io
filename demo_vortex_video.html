@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Demo · Cosmic Vortex (real footage)</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--teal:#3fbf9a;--blue:#378add;--ink:#e8ecf4;--ink-dim:#8a94a8;--line:rgba(232,236,244,.14)}
+  html,body{margin:0;padding:0;background:#000;min-height:100%;}
+  .chip{position:fixed;left:18px;top:16px;z-index:9;font:12px/1.6 "IBM Plex Mono",monospace;color:var(--ink-dim);
+    background:rgba(10,14,24,.7);border:1px solid var(--line);border-radius:10px;padding:8px 14px;backdrop-filter:blur(8px)}
+  .chip b{color:var(--ink);font-weight:500}
+
+  /* the real footage as a fixed, full-bleed background */
+  .vid{position:fixed;inset:0;z-index:0;overflow:hidden}
+  .vid video{width:100%;height:100%;object-fit:cover;display:block}
+  .vid::after{content:"";position:absolute;inset:0;               /* blend into page black at edges */
+    background:radial-gradient(140% 100% at 50% 30%, transparent 55%, rgba(0,0,0,.55) 100%),
+               linear-gradient(180deg, transparent 60%, rgba(0,0,0,.8) 100%)}
+
+  /* mock Contact panel so the integrated look can be judged */
+  .stage{position:relative;z-index:2;min-height:100vh;display:flex;align-items:flex-end;justify-content:center;padding:0 24px 7vh}
+  .wrap{max-width:900px;width:100%;
+    background:linear-gradient(165deg, rgba(22,28,44,.58), rgba(9,12,20,.82));
+    backdrop-filter:blur(18px) saturate(1.25);-webkit-backdrop-filter:blur(18px) saturate(1.25);
+    border:1px solid rgba(255,255,255,.09);border-radius:22px;padding:42px 46px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 40px 100px -38px rgba(0,0,0,.9)}
+  .num{font:600 13px "IBM Plex Mono",monospace;letter-spacing:.1em;padding:3px 10px;border:1px solid rgba(63,191,154,.4);
+    border-radius:999px;background:linear-gradient(90deg,var(--teal),var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent}
+  h2{font:600 clamp(24px,3.2vw,36px) "Space Grotesk",sans-serif;color:var(--ink);margin:14px 0 12px;letter-spacing:-.01em}
+  p{font:15px/1.7 Inter,sans-serif;color:var(--ink-dim);max-width:640px;margin:0 0 24px}
+  p strong{color:var(--ink)}
+  .btns{display:flex;flex-wrap:wrap;gap:12px}
+  .btn{font:12.5px "IBM Plex Mono",monospace;border:1px solid var(--line);border-radius:11px;padding:12px 18px;
+    color:var(--ink);text-decoration:none;background:rgba(255,255,255,.03)}
+  .btn.primary{background:linear-gradient(120deg,var(--teal),#2fae8c 55%,var(--blue));color:#04150f;border-color:transparent;
+    box-shadow:0 8px 28px -10px rgba(63,191,154,.6)}
+</style>
+</head>
+<body>
+<div class="chip"><b>Cosmic vortex — real footage</b><br>assets/vortex.mp4 · 2.8 MB · loops</div>
+
+<div class="vid" aria-hidden="true">
+  <video autoplay muted loop playsinline preload="auto" id="v">
+    <source src="assets/vortex.mp4" type="video/mp4"/>
+  </video>
+</div>
+
+<div class="stage">
+  <div class="wrap">
+    <span class="num">10 · GET IN TOUCH</span>
+    <h2>Let's map what's next.</h2>
+    <p>Open to applied AI, geospatial ML, and research-scientist roles. <strong>Relocating to India in August 2026.</strong></p>
+    <div class="btns">
+      <a class="btn primary" href="#">venkateshkolluru95@gmail.com</a>
+      <a class="btn" href="#">Google Scholar</a>
+      <a class="btn" href="#">LinkedIn</a>
+      <a class="btn" href="#">GitHub</a>
+    </div>
+  </div>
+</div>
+<script>
+  const v=document.getElementById('v');
+  v.play().catch(()=>{});
+  /* headless helper: seek to t seconds so a screenshot shows a real frame */
+  window.__seek=(t)=>{ v.currentTime=t||3; return 'seeked'; };
+</script>
+</body>
+</html>

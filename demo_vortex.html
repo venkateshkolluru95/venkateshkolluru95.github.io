@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Demo · Cosmic Vortex (dense)</title>
+<style>
+  html,body{margin:0;padding:0;background:#000;height:100%;overflow:hidden}
+  canvas{display:block;width:100vw;height:100vh}
+  .chip{position:fixed;left:18px;top:16px;z-index:5;font:12px/1.6 "IBM Plex Mono",monospace;color:#8a94a8;
+    background:rgba(10,14,24,.7);border:1px solid rgba(232,236,244,.15);border-radius:10px;padding:8px 14px;backdrop-filter:blur(8px)}
+  .chip b{color:#e8ecf4;font-weight:500}
+</style>
+</head>
+<body>
+<div class="chip"><b>Cosmic vortex — dense accretion disk</b><br>standalone demo · not yet integrated</div>
+<canvas id="c"></canvas>
+<script>
+const cvs=document.getElementById('c'), ctx=cvs.getContext('2d');
+const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let W,H,PR;
+function size(){ PR=Math.min(devicePixelRatio||1,1.75);
+  W=innerWidth; H=innerHeight; cvs.width=W*PR; cvs.height=H*PR;
+  ctx.setTransform(PR,0,0,PR,0,0); ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H); build(); }
+let P=[], stars=[], CX,CY,R0,SQ=0.72;
+function build(){
+  CX=W*0.5; CY=H*0.07; R0=H*0.44;
+  const MINR=R0*0.62, MAXR=Math.max(W*0.72, R0*2.6);
+  P=[];
+  const N= reduceMotion? 4000 : 9000;
+  for(let i=0;i<N;i++){
+    // concentrate near the ring, thin out far away
+    const u=Math.random();
+    const r=MINR + Math.pow(u,1.7)*(MAXR-MINR);
+    P.push({ r, th:Math.random()*Math.PI*2,
+      sp:(200/Math.pow(r,1.18))*(0.85+Math.random()*0.3),   // Keplerian-ish
+      w:0.5+Math.random()*1.1, ph:Math.random()*6.283,
+      wob:(Math.random()-0.5)*0.05*r });                     // slight band thickness
+  }
+  stars=Array.from({length:110},()=>({x:Math.random()*W,y:Math.random()*H,ph:Math.random()*6.283,
+    s:0.5+Math.random()*1.4, c:['220,235,255','255,200,180','200,215,255'][ (Math.random()*3)|0 ]}));
+}
+function col(r,topness){
+  // hot cyan-white at the inner edge -> steel blue -> faint dust
+  const hot=Math.max(0,1-(r-R0*0.62)/(R0*0.55));      // 1 at inner edge
+  const R=55+135*hot, G=125+110*hot, B=205+50*hot;
+  const bright=(0.10+0.9*Math.pow(hot,1.6))*(0.35+0.65*topness);
+  return {R,G,B,bright};
+}
+function frame(t,dt){
+  // fade for long filament trails (the density trick)
+  ctx.globalCompositeOperation='source-over';
+  ctx.fillStyle='rgba(0,0,0,0.085)'; ctx.fillRect(0,0,W,H);
+  ctx.globalCompositeOperation='lighter';
+  // ring glow: dim full ring + bright top arc (accumulates to a steady glow)
+  let g=ctx.createRadialGradient(CX,CY,R0*0.55,CX,CY,R0*1.5);
+  g.addColorStop(0,'rgba(0,0,0,0)');
+  g.addColorStop(0.32,'rgba(120,200,255,0.028)');
+  g.addColorStop(0.5,'rgba(70,130,200,0.012)');
+  g.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  // particles: fine filament streaks
+  for(const p of P){
+    p.th+=p.sp*dt;
+    const rr=p.r+p.wob*Math.sin(t*0.3+p.ph);
+    const x=CX+Math.cos(p.th)*rr, y=CY+Math.sin(p.th)*rr*SQ;
+    if(y<-30||y>H+30||x<-60||x>W+60) continue;
+    const top=Math.max(0, -Math.sin(p.th));            // brighter arc above the void
+    const c=col(rr, 0.35+0.65*top);
+    const tw=0.6+0.4*Math.sin(t*1.7+p.ph);
+    const a=Math.min(0.85, c.bright*tw*0.5);
+    if(a<0.006) continue;
+    const Ls=Math.min(0.06, p.sp*0.9);                 // streak follows motion
+    const x0=CX+Math.cos(p.th-Ls)*rr, y0=CY+Math.sin(p.th-Ls)*rr*SQ;
+    ctx.strokeStyle=`rgba(${c.R|0},${c.G|0},${c.B|0},${a.toFixed(3)})`;
+    ctx.lineWidth=p.w;
+    ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x,y); ctx.stroke();
+  }
+  // stars (redrawn crisp each frame; inside the void too, like the reference)
+  ctx.globalCompositeOperation='source-over';
+  for(const s of stars){ const a=0.25+0.6*(0.5+0.5*Math.sin(t*0.9+s.ph));
+    ctx.fillStyle=`rgba(${s.c},${a.toFixed(3)})`; ctx.fillRect(s.x,s.y,s.s,s.s); }
+}
+let last=0;
+function loop(now){
+  const t=now*0.001, dt=Math.min(0.05,(now-last)*0.001||0.016); last=now;
+  if(!reduceMotion) frame(t,dt);
+  requestAnimationFrame(loop);
+}
+addEventListener('resize',size);
+size();
+requestAnimationFrame(loop);
+if(reduceMotion){ for(let k=0;k<160;k++) frame(k/60,1/60); }
+/* headless demo: run n synthetic frames so trails accumulate, then it can be screenshotted */
+window.__vd=(n)=>{ for(let k=0;k<(n||240);k++) frame(k/60,1/60); return 'vortex posed '+(n||240)+' frames'; };
+</script>
+</body>
+</html>

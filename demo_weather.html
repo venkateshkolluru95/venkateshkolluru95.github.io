@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Demo · Dense GFS Wind Globe</title>
+<style>
+  html,body{margin:0;padding:0;background:#000;height:100%;overflow:hidden}
+  canvas{display:block}
+  .chip{position:fixed;left:18px;top:16px;z-index:5;font:12px/1.6 "IBM Plex Mono",monospace;color:#8a94a8;
+    background:rgba(10,14,24,.7);border:1px solid rgba(232,236,244,.15);border-radius:10px;padding:8px 14px;backdrop-filter:blur(8px)}
+  .chip b{color:#e8ecf4;font-weight:500}
+  .dens{position:fixed;right:18px;top:16px;z-index:5;display:flex;gap:6px;font:12px "IBM Plex Mono",monospace}
+  .dens button{background:rgba(10,14,24,.7);border:1px solid rgba(232,236,244,.18);color:#8a94a8;border-radius:8px;padding:7px 12px;cursor:pointer}
+  .dens button.on{color:#04150f;background:#3fbf9a;border-color:#3fbf9a}
+</style>
+</head>
+<body>
+<div class="chip"><b>GFS surface wind — dense particles</b><br>drag to spin · standalone demo</div>
+<div class="dens" id="dens">
+  <button data-n="20000">med</button><button data-n="40000" class="on">dense</button><button data-n="60000">ultra</button>
+</div>
+<canvas id="c"></canvas>
+<script type="importmap">{ "imports": { "three": "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.module.min.js" } }</script>
+<script type="module">
+import * as THREE from 'three';
+const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const cvs=document.getElementById('c');
+const renderer=new THREE.WebGLRenderer({canvas:cvs,antialias:true,alpha:false});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2)); renderer.setClearColor(0x020409);
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(45,1,0.1,100); camera.position.set(0,0.15,5.6);
+scene.add(new THREE.AmbientLight(0x506a8a,0.5));
+const key=new THREE.DirectionalLight(0xffffff,1.1); key.position.set(5,3,5); scene.add(key);
+
+const R=1.7, world=new THREE.Group(); scene.add(world);
+const tex=new THREE.TextureLoader();
+const mat=new THREE.MeshPhongMaterial({color:0xffffff});
+tex.load('assets/earth_dark.jpg',t=>{ t.colorSpace=THREE.SRGBColorSpace; mat.map=t; mat.emissiveMap=t;
+  mat.emissive=new THREE.Color(0xffffff); mat.emissiveIntensity=0.95; mat.needsUpdate=true; });
+world.add(new THREE.Mesh(new THREE.SphereGeometry(R,64,64),mat));
+
+/* ------- real GFS wind grid ------- */
+let OK=false,NX=360,NY=181,U=null,V=null;
+fetch('assets/data/gfs-wind.json').then(r=>r.json()).then(j=>{
+  const u=j.find(d=>/U-comp/i.test(d.header.parameterNumberName))||j[0];
+  const v=j.find(d=>/V-comp/i.test(d.header.parameterNumberName))||j[1];
+  NX=u.header.nx; NY=u.header.ny; U=u.data; V=v.data; OK=true;
+});
+function wind(lat,lon){
+  if(!OK) return [Math.cos(lat*Math.PI/180*3)*8,0];
+  const L=((lon%360)+360)%360, x=L*(NX/360), y=(90-lat);
+  const x0=(x|0)%NX, x1=(x0+1)%NX, fx=x-(x|0);
+  const y0=Math.max(0,Math.min(NY-1,y|0)), y1=Math.min(NY-1,y0+1), fy=y-(y|0);
+  const u=(U[y0*NX+x0]*(1-fx)+U[y0*NX+x1]*fx)*(1-fy)+(U[y1*NX+x0]*(1-fx)+U[y1*NX+x1]*fx)*fy;
+  const v=(V[y0*NX+x0]*(1-fx)+V[y0*NX+x1]*fx)*(1-fy)+(V[y1*NX+x0]*(1-fx)+V[y1*NX+x1]*fx)*fy;
+  return [u,v];
+}
+
+/* ------- dense particle system (rebuildable) ------- */
+const WMAX=20, TRAIL=13, SEGS=TRAIL-1;
+let sys=null;
+function buildWind(N){
+  if(sys){ world.remove(sys.mesh); sys.geo.dispose(); sys.mat.dispose(); }
+  const lat=new Float32Array(N), lon=new Float32Array(N), age=new Float32Array(N), max=new Float32Array(N), spd=new Float32Array(N);
+  const trail=new Float32Array(N*TRAIL*3), pos=new Float32Array(N*SEGS*2*3), aA=new Float32Array(N*SEGS*2), aS=new Float32Array(N*SEGS*2);
+  function llp(la,lo,out,o){ const phi=(90-la)*Math.PI/180, th=(lo+180)*Math.PI/180, r=R*1.012;
+    out[o]=-r*Math.sin(phi)*Math.cos(th); out[o+1]=r*Math.cos(phi); out[o+2]=r*Math.sin(phi)*Math.sin(th); }
+  function reset(i){ lat[i]=Math.asin(2*Math.random()-1)*180/Math.PI; lon[i]=Math.random()*360-180;
+    age[i]=0; max[i]=60+Math.random()*90; const b=i*TRAIL*3; llp(lat[i],lon[i],trail,b);
+    for(let s2=1;s2<TRAIL;s2++){ trail[b+s2*3]=trail[b]; trail[b+s2*3+1]=trail[b+1]; trail[b+s2*3+2]=trail[b+2]; } }
+  for(let i=0;i<N;i++){ reset(i); age[i]=Math.random()*90; }
+  const geo=new THREE.BufferGeometry();
+  geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  geo.setAttribute('aA',new THREE.BufferAttribute(aA,1));
+  geo.setAttribute('aS',new THREE.BufferAttribute(aS,1));
+  const wm=new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
+    uniforms:{uShow:{value:1}},
+    vertexShader:`attribute float aA; attribute float aS; varying float vA; varying float vS;
+      void main(){ vA=aA; vS=aS; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
+    fragmentShader:`varying float vA; varying float vS; uniform float uShow;
+      void main(){
+        vec3 c0=vec3(0.15,0.35,0.82), c1=vec3(0.10,0.72,0.75), c2=vec3(0.35,0.85,0.30),
+             c3=vec3(0.96,0.88,0.25), c4=vec3(0.97,0.45,0.15);
+        vec3 c=mix(c0,c1,smoothstep(0.0,0.25,vS)); c=mix(c,c2,smoothstep(0.25,0.5,vS));
+        c=mix(c,c3,smoothstep(0.5,0.75,vS)); c=mix(c,c4,smoothstep(0.75,1.0,vS));
+        gl_FragColor=vec4(c, vA*vA*0.75*uShow);
+      }`});
+  const mesh=new THREE.LineSegments(geo,wm); mesh.frustumCulled=false; world.add(mesh);
+  sys={N,lat,lon,age,max,spd,trail,pos,aA,aS,geo,mat:wm,mesh,
+    step(dt){
+      const {N,lat,lon,age,max,spd,trail}=this;
+      for(let i=0;i<N;i++){
+        const uv=wind(lat[i],lon[i]); spd[i]=Math.hypot(uv[0],uv[1]);
+        const cl=Math.max(0.2,Math.cos(lat[i]*Math.PI/180));
+        lon[i]+=(uv[0]/cl)*0.055*dt; lat[i]+=uv[1]*0.055*dt;
+        if(lon[i]>180)lon[i]-=360; else if(lon[i]<-180)lon[i]+=360;
+        age[i]+=dt;
+        if(lat[i]>88||lat[i]<-88||age[i]>max[i]){ reset(i); spd[i]=0; continue; }
+        const b=i*TRAIL*3;
+        for(let s2=0;s2<TRAIL-1;s2++){ trail[b+s2*3]=trail[b+(s2+1)*3]; trail[b+s2*3+1]=trail[b+(s2+1)*3+1]; trail[b+s2*3+2]=trail[b+(s2+1)*3+2]; }
+        llp(lat[i],lon[i],trail,b+(TRAIL-1)*3);
+      }
+      let o=0,ao=0;
+      const {pos,aA,aS}=this;
+      for(let i=0;i<N;i++){ const b=i*TRAIL*3, sn=Math.min(1,spd[i]/WMAX);
+        for(let s2=0;s2<SEGS;s2++){
+          pos[o++]=trail[b+s2*3]; pos[o++]=trail[b+s2*3+1]; pos[o++]=trail[b+s2*3+2];
+          pos[o++]=trail[b+(s2+1)*3]; pos[o++]=trail[b+(s2+1)*3+1]; pos[o++]=trail[b+(s2+1)*3+2];
+          aA[ao]=s2/SEGS; aA[ao+1]=(s2+1)/SEGS; aS[ao]=sn; aS[ao+1]=sn; ao+=2;
+        } }
+      this.geo.attributes.position.needsUpdate=true; this.geo.attributes.aA.needsUpdate=true; this.geo.attributes.aS.needsUpdate=true;
+    }};
+  return sys;
+}
+buildWind(40000);
+document.getElementById('dens').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  document.querySelectorAll('.dens button').forEach(x=>x.classList.toggle('on',x===b));
+  buildWind(+b.dataset.n);
+});
+
+/* interaction: drag to spin + slow auto-rotate */
+let dragging=false,lx=0,tRY=0,cRY=0,tRX=0,cRX=0,ly=0;
+cvs.addEventListener('mousedown',e=>{dragging=true;lx=e.clientX;ly=e.clientY;});
+addEventListener('mousemove',e=>{ if(!dragging)return; tRY+=(e.clientX-lx)*0.005; tRX+=(e.clientY-ly)*0.005;
+  tRX=Math.max(-0.8,Math.min(0.8,tRX)); lx=e.clientX; ly=e.clientY; });
+addEventListener('mouseup',()=>dragging=false);
+function resize(){ renderer.setSize(innerWidth,innerHeight,false); camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); }
+addEventListener('resize',resize); resize();
+const clock=new THREE.Clock();
+function anim(){
+  requestAnimationFrame(anim);
+  const dt=Math.min(0.05,clock.getDelta());
+  if(!dragging && !reduceMotion) tRY+=0.0012;
+  cRY+=(tRY-cRY)*0.08; cRX+=(tRX-cRX)*0.08;
+  world.rotation.y=cRY; world.rotation.x=cRX;
+  if(!reduceMotion) sys.step(1);
+  renderer.render(scene,camera);
+}
+anim();
+/* headless demo: step n frames then render once */
+window.__wd=(n)=>{ for(let k=0;k<(n||30);k++) sys.step(1); renderer.render(scene,camera); return 'wind posed, N='+sys.N; };
+</script>
+</body>
+</html>

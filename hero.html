@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Venkatesh Kolluru — Applied AI Scientist · Earth Observation</title>
+<meta name="description" content="Venkatesh Kolluru, Ph.D. — Applied AI Scientist building and operationalizing geospatial foundation models for satellite Earth observation." />
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --void:#06080f;
+  --void-2:#0b1020;
+  --panel:rgba(13,18,32,.62);
+  --panel-line:rgba(232,236,244,.14);
+  --ink:#e8ecf4;
+  --ink-dim:#8a94a8;
+  --ink-faint:#5b6372;
+  --teal:#3fbf9a;     /* Prithvi-EO / foundation models */
+  --blue:#378add;     /* flood / water */
+  --amber:#f2a93b;    /* recognition / accent */
+  --violet:#8b7bb0;
+  --display:"Space Grotesk", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", monospace;
+  --body:"Inter", system-ui, sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(1100px 760px at 74% -8%, #142b4a 0%, transparent 55%),
+    radial-gradient(900px 700px at 78% 4%, #15294a 0%, transparent 52%),
+    var(--void);
+  color:var(--ink);
+  font-family:var(--body);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+  min-height:100vh;
+}
+a{color:inherit;text-decoration:none}
+
+/* ---------- top bar ---------- */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:30;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 28px;
+  backdrop-filter:blur(10px);
+  background:linear-gradient(180deg, rgba(6,8,15,.78), rgba(6,8,15,0));
+}
+.brand{font-family:var(--mono);font-size:13px;letter-spacing:.12em;color:var(--ink-dim)}
+.brand b{color:var(--ink);font-weight:500}
+.navlinks{display:flex;gap:22px;font-family:var(--mono);font-size:12.5px;letter-spacing:.06em}
+.navlinks a{color:var(--ink-dim);transition:color .2s}
+.navlinks a:hover{color:var(--teal)}
+@media(max-width:760px){.navlinks{display:none}}
+
+/* ---------- hero / canvas ---------- */
+#globe{position:fixed;inset:0;width:100vw;height:100vh;display:block;z-index:0}
+#scene-wrap{position:relative;width:100%;height:100vh;min-height:580px;z-index:1;pointer-events:none}
+.hero-copy{
+  position:absolute;left:6.5%;top:50%;transform:translateY(-50%);
+  z-index:10;max-width:560px;pointer-events:none;text-align:left;
+}
+.eyebrow{
+  font-family:var(--mono);font-size:12px;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--teal);margin-bottom:18px;
+  display:inline-flex;align-items:center;gap:9px;
+}
+.eyebrow .pulse{width:7px;height:7px;border-radius:50%;background:var(--teal);
+  box-shadow:0 0 10px var(--teal);animation:pulse 1.8s infinite}
+.hero-name{
+  font-family:var(--display);font-weight:600;line-height:1;letter-spacing:-.025em;
+  font-size:clamp(40px,6.6vw,78px);
+  background:linear-gradient(180deg,#ffffff 0%, #c7d2e6 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero-copy h1{
+  font-family:var(--display);font-weight:500;line-height:1.12;
+  font-size:clamp(20px,2.6vw,30px);letter-spacing:-.01em;margin-top:16px;color:var(--ink);
+}
+.hero-copy h1 .accent{color:var(--teal);font-weight:500}
+.hero-copy p{
+  margin-top:18px;color:var(--ink-dim);font-size:16px;line-height:1.65;max-width:480px;
+}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px;pointer-events:auto}
+.btn{font-family:var(--mono);font-size:12.5px;letter-spacing:.04em;
+  border:1px solid var(--panel-line);border-radius:11px;padding:12px 18px;color:var(--ink);
+  background:rgba(255,255,255,.03);transition:border-color .2s,color .2s,background .2s}
+.btn:hover{border-color:var(--teal);color:var(--teal)}
+.btn.primary{background:var(--teal);color:#04150f;border-color:var(--teal);font-weight:500}
+.btn.primary:hover{color:#04150f;opacity:.92}
+
+.hint{
+  position:absolute;left:6.5%;bottom:40px;z-index:10;
+  font-family:var(--mono);font-size:12px;color:var(--ink-faint);
+  text-align:left;line-height:1.9;
+}
+.scroll-cue{
+  position:absolute;left:50%;bottom:26px;transform:translateX(-50%);z-index:10;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--ink-faint);text-align:center;
+}
+.scroll-cue .arrow{display:block;margin:8px auto 0;width:1px;height:34px;
+  background:linear-gradient(180deg,var(--ink-faint),transparent);animation:cue 2.2s infinite}
+@keyframes cue{0%{opacity:.2;transform:translateY(-6px)}50%{opacity:1;transform:translateY(0)}100%{opacity:.2;transform:translateY(-6px)}}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+@media(max-width:760px){
+  .hero-copy{left:22px;right:22px;top:auto;bottom:148px;transform:none;max-width:none}
+  .hint{left:22px;right:auto;bottom:96px;text-align:left}
+  .scroll-cue{display:none}
+}
+
+/* temporary Earth-layer switcher (will be driven by sections later) */
+.layers{
+  position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:27;
+  display:flex;gap:6px;padding:7px 8px;align-items:center;flex-wrap:wrap;justify-content:center;
+  border:1px solid var(--panel-line);border-radius:14px;max-width:94vw;
+  background:rgba(11,16,32,.72);backdrop-filter:blur(10px);pointer-events:auto;
+}
+.layers .lab{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);padding:0 6px}
+.layers button{font-family:var(--mono);font-size:11.5px;letter-spacing:.03em;color:var(--ink-dim);
+  background:transparent;border:1px solid transparent;border-radius:9px;padding:8px 12px;cursor:pointer;transition:.2s;white-space:nowrap}
+.layers button:hover{color:var(--ink)}
+.layers button.active{color:#04150f;background:var(--teal);border-color:var(--teal);font-weight:500}
+@media(max-width:760px){.layers .lab{display:none}.layers button{font-size:10.5px;padding:7px 9px}}
+
+/* floating label tooltip over canvas */
+#tooltip{
+  position:fixed;z-index:25;pointer-events:none;opacity:0;transform:translate(-50%,-130%);
+  transition:opacity .15s;
+  font-family:var(--mono);font-size:12px;letter-spacing:.04em;
+  background:rgba(11,16,32,.92);border:1px solid var(--panel-line);
+  padding:8px 12px;border-radius:9px;white-space:nowrap;color:var(--ink);
+  box-shadow:0 8px 34px rgba(0,0,0,.5);backdrop-filter:blur(6px);
+}
+#tooltip .t-sub{color:var(--teal);display:block;font-size:10.5px;margin-top:3px;letter-spacing:.1em}
+
+/* loader */
+#loader{position:fixed;inset:0;z-index:60;background:var(--void);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
+  transition:opacity .7s}
+#loader.done{opacity:0;pointer-events:none}
+.loader-ring{width:46px;height:46px;border:2px solid rgba(232,236,244,.14);
+  border-top-color:var(--teal);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#loader p{font-family:var(--mono);font-size:11px;letter-spacing:.22em;color:var(--ink-dim);text-transform:uppercase}
+
+/* spacer so you can scroll a touch and see the globe fade */
+.after{position:relative;z-index:5;background:var(--void);padding:120px 32px 160px;text-align:center}
+.after p{font-family:var(--mono);font-size:12px;letter-spacing:.16em;color:var(--ink-faint);text-transform:uppercase}
+</style>
+</head>
+<body>
+
+<div id="loader"><div class="loader-ring"></div><p>Initializing orbit</p></div>
+
+<div class="topbar">
+  <div class="brand"><b>VENKATESH KOLLURU</b> · Applied AI Scientist</div>
+  <nav class="navlinks">
+    <a href="#">News</a>
+    <a href="#">About</a>
+    <a href="#">AI / Models</a>
+    <a href="#">Projects</a>
+    <a href="#">Experience</a>
+    <a href="#">Publications</a>
+    <a href="#">Recognition</a>
+    <a href="#">Contact</a>
+  </nav>
+</div>
+
+<section id="scene-wrap">
+  <canvas id="globe"></canvas>
+  <div class="hero-copy">
+    <div class="eyebrow"><span class="pulse"></span>Foundation Models · Earth Observation</div>
+    <div class="hero-name">Venkatesh<br>Kolluru</div>
+    <h1>I teach satellites <span class="accent">to see</span> the changing Earth.</h1>
+    <p>Applied AI Scientist operationalizing geospatial foundation models — from raw satellite archives to flood, crop, and burn-scar maps that serve real users.</p>
+    <div class="cta">
+      <a class="btn primary" href="#">View CV</a>
+      <a class="btn" href="https://scholar.google.com/citations?user=7Tji1bMAAAAJ&hl=en" target="_blank" rel="noopener">Google Scholar</a>
+      <a class="btn" href="https://github.com/venkateshkolluru95" target="_blank" rel="noopener">GitHub</a>
+      <a class="btn" href="mailto:venkateshkolluru95@gmail.com">Email</a>
+    </div>
+  </div>
+  <div class="hint"><span style="color:var(--teal)">●</span> drag to spin · scroll to zoom<br>hover a satellite to pause it, then click</div>
+</section>
+
+<div id="tooltip"></div>
+<div class="layers" id="layers"></div>
+
+<div class="after"><p>— hero preview · sections continue below —</p></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/satellite.js/5.0.0/satellite.min.js"></script>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.module.min.js"
+}}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+
+/* ============================================================
+   DARK-COSMIC HERO: sunlit Earth (offset right) with a visible
+   day/night terminator, glowing atmosphere, starfield, orbiting
+   satellites and ground markers. Clickable objects = sections.
+   ============================================================ */
+
+const canvas = document.getElementById('globe');
+const tooltip = document.getElementById('tooltip');
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 200);
+camera.position.set(0, 0.4, 7.2);
+
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+/* ---- lights: low ambient + strong key => day/night terminator ---- */
+scene.add(new THREE.AmbientLight(0x39507a, 0.55));
+const key = new THREE.DirectionalLight(0xffffff, 2.4);
+key.position.set(5, 2.4, 4);
+scene.add(key);
+const rim = new THREE.DirectionalLight(0x5aa6e0, 0.7);
+rim.position.set(-6, -1.5, -3);
+scene.add(rim);
+
+/* ---- starfield (now visible + twinkling) ---- */
+const starGeo = new THREE.BufferGeometry();
+const starN = 2200, starPos = new Float32Array(starN*3);
+for(let i=0;i<starN;i++){
+  const r = 36 + Math.random()*46;
+  const t = Math.random()*Math.PI*2, p = Math.acos(2*Math.random()-1);
+  starPos[i*3]   = r*Math.sin(p)*Math.cos(t);
+  starPos[i*3+1] = r*Math.sin(p)*Math.sin(t);
+  starPos[i*3+2] = r*Math.cos(p);
+}
+starGeo.setAttribute('position', new THREE.BufferAttribute(starPos,3));
+const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({color:0xcfe0ff,size:0.085,transparent:true,opacity:0.85,sizeAttenuation:true}));
+scene.add(stars);
+// a sparse layer of brighter near stars
+const star2Geo = new THREE.BufferGeometry();
+const star2N = 240, star2Pos = new Float32Array(star2N*3);
+for(let i=0;i<star2N;i++){
+  const r = 24 + Math.random()*20;
+  const t = Math.random()*Math.PI*2, p = Math.acos(2*Math.random()-1);
+  star2Pos[i*3]=r*Math.sin(p)*Math.cos(t); star2Pos[i*3+1]=r*Math.sin(p)*Math.sin(t); star2Pos[i*3+2]=r*Math.cos(p);
+}
+star2Geo.setAttribute('position', new THREE.BufferAttribute(star2Pos,3));
+const stars2 = new THREE.Points(star2Geo, new THREE.PointsMaterial({color:0xffffff,size:0.16,transparent:true,opacity:0.9}));
+scene.add(stars2);
+
+/* ---- world + system groups (offset to the right) ---- */
+const world = new THREE.Group();
+const system = new THREE.Group();
+system.add(world);
+scene.add(system);
+function layoutSystem(){
+  if(window.innerWidth > 820){
+    // big, anchored bottom-right; ~75% of the globe visible, lower-right corner cropped
+    system.position.x = 3.0; system.position.y = -2.6; system.scale.setScalar(1.85);
+  } else {
+    system.position.x = 0.7; system.position.y = -1.6; system.scale.setScalar(1.2);
+  }
+}
+layoutSystem();
+window.addEventListener('resize', layoutSystem);
+
+/* ---- Earth: NASA textures (local first, CDN fallback) ---- */
+const EARTH_R = 1.7;
+const CDN = 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/';
+const texLoader = new THREE.TextureLoader();
+texLoader.setCrossOrigin('anonymous');
+function loadTex(local, remote, onOk){
+  texLoader.load(local, onOk, undefined, ()=> texLoader.load(remote, onOk, undefined, ()=>{}));
+}
+function makeEarthTexture(){
+  const c = document.createElement('canvas'); c.width=1024; c.height=512;
+  const g = c.getContext('2d');
+  const oc = g.createLinearGradient(0,0,0,512);
+  oc.addColorStop(0,'#0a2540'); oc.addColorStop(.5,'#0d2e52'); oc.addColorStop(1,'#08203c');
+  g.fillStyle=oc; g.fillRect(0,0,1024,512);
+  g.fillStyle='#16633f';
+  const blobs=[[180,170,90,55],[260,210,70,40],[470,150,130,70],[520,230,80,50],
+    [560,300,60,90],[700,170,90,55],[760,250,70,45],[820,330,55,40],[300,330,70,45],[150,300,55,35]];
+  blobs.forEach(([x,y,rx,ry])=>{ g.beginPath(); g.ellipse(x,y,rx,ry,Math.random()*1,0,Math.PI*2); g.fill(); });
+  for(let i=0;i<600;i++){
+    g.fillStyle = Math.random()>.5 ? 'rgba(40,224,176,.07)' : 'rgba(22,99,63,.5)';
+    g.fillRect(Math.random()*1024,Math.random()*512,2,2);
+  }
+  const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+const SEG = 200;
+const SPHERE = new THREE.SphereGeometry(EARTH_R, SEG, SEG);   // dense enough for real displacement
+const earthMat  = new THREE.MeshPhongMaterial({map:makeEarthTexture(), shininess:16, specular:new THREE.Color(0x2a4f73)});
+const earth2Mat = new THREE.MeshPhongMaterial({transparent:true, opacity:0, depthWrite:false, shininess:16, specular:new THREE.Color(0x2a4f73)});
+const earth  = new THREE.Mesh(SPHERE, earthMat);
+const earth2 = new THREE.Mesh(SPHERE, earth2Mat); earth2.scale.setScalar(1.001); earth2.visible=false;
+world.add(earth); world.add(earth2);
+
+/* ---- EO data layers: the same Earth seen through different satellite products ---- */
+const LAYERS = [
+  { key:'terrain',   name:'Elevation',     sub:'hypsometric · 3D',       disp:0.16 },  // composited texture (built below)
+  { key:'natural',   name:'Natural color', sub:'Blue Marble',            map:'assets/earth_day.jpg',          normal:true, spec:true },
+  { key:'night',     name:'Night lights',  sub:'VIIRS city lights',      map:'assets/earth_night.jpg',        emissive:true },
+  { key:'landcover', name:'Land cover',    sub:'MODIS IGBP classes',     map:'assets/earth_landcover_hi.png' },
+  { key:'ndvi',      name:'Vegetation',    sub:'MODIS NDVI greenness',   map:'assets/earth_ndvi_hi.png',    breathe:true },
+  { key:'weather',   name:'Weather',       sub:'GFS wind streamlines',   map:'assets/earth_day.jpg', normal:true, spec:true, weather:true },
+  { key:'pop',       name:'Population',     sub:'world density spikes',   map:'assets/earth_day.jpg', litbase:0.6, viz:'pop' },
+  { key:'sats',      name:'Satellites',     sub:'LEO · live TLE',         map:'assets/earth_day.jpg', normal:true, spec:true, viz:'sats' },
+];
+let curLayer = 0;
+let NORMAL_TEX=null, SPEC_TEX=null, DISP_TEX=null;
+let cloudTarget=0, cloudCur=0, weatherTarget=0, weatherCur=0;
+
+function applyLayer(mat, L){
+  if(L.tex) mat.map = L.tex;
+  mat.normalMap   = (L.normal===true) ? NORMAL_TEX : null;
+  if(L.normal===true) mat.normalScale = new THREE.Vector2(0.85,0.85);
+  mat.specularMap = (L.spec===true) ? SPEC_TEX : null;
+  mat.specular    = new THREE.Color((L.spec===true) ? 0x2a4f73 : 0x05070d);
+  mat.shininess   = (L.spec===true) ? 16 : 5;
+  mat.displacementMap   = (L.disp && DISP_TEX) ? DISP_TEX : null;
+  mat.displacementScale = L.disp || 0;
+  if(L.emissive){ mat.emissiveMap=L.tex; mat.emissive=new THREE.Color(0xffe0a8); mat.emissiveIntensity=1.5; }
+  else if(L.litbase){ mat.emissiveMap=L.tex; mat.emissive=new THREE.Color(0xffffff); mat.emissiveIntensity=L.litbase; }
+  else if(L.weather){ mat.emissiveMap=L.tex; mat.emissive=new THREE.Color(0xffffff); mat.emissiveIntensity=0.32; }
+  else if(L.breathe){ mat.emissiveMap=L.tex; mat.emissive=new THREE.Color(0x1f4012); mat.emissiveIntensity=0.0; }
+  else { mat.emissiveMap=null; mat.emissive=new THREE.Color(0x000000); mat.emissiveIntensity=0; }
+  mat.needsUpdate = true;
+}
+function refresh(){ applyLayer(earthMat, LAYERS[curLayer]); }
+texLoader.load('assets/earth_normal.jpg',   t=>{ NORMAL_TEX=t; refresh(); });
+texLoader.load('assets/earth_specular.jpg', t=>{ SPEC_TEX=t;   refresh(); });
+texLoader.load('assets/earth_topology.png', t=>{ DISP_TEX=t;   refresh(); });
+const MAXANISO = renderer.capabilities.getMaxAnisotropy();
+LAYERS.forEach(L=>{ if(!L.map) return; texLoader.load(L.map, t=>{ t.colorSpace=THREE.SRGBColorSpace; t.anisotropy=MAXANISO; t.needsUpdate=true; L.tex=t; if(L===LAYERS[curLayer]) applyLayer(earthMat, L); }); });
+
+/* Elevation layer: composite hypsometric land (ASTER color index) over bathymetry oceans */
+function buildElevationTexture(){
+  const aImg=new Image(), bImg=new Image(); let n=0;
+  aImg.crossOrigin='anonymous'; bImg.crossOrigin='anonymous';
+  function ready(){
+    const W=2048,H=1024;
+    const ca=document.createElement('canvas'); ca.width=W; ca.height=H; const ga=ca.getContext('2d');
+    ga.drawImage(aImg,0,0,W,H); const A=ga.getImageData(0,0,W,H).data;
+    const cb=document.createElement('canvas'); cb.width=W; cb.height=H; const gb=cb.getContext('2d');
+    gb.drawImage(bImg,0,0,W,H); const B=gb.getImageData(0,0,W,H).data;
+    const out=ga.createImageData(W,H), O=out.data;
+    for(let i=0;i<O.length;i+=4){
+      const br=B[i],bg=B[i+1],bb=B[i+2];
+      const isOcean=(bb>br+12 && bb>bg+4);            // blue-dominant bathymetry pixel = ocean
+      if(isOcean){ O[i]=br; O[i+1]=bg; O[i+2]=bb; }   // keep ocean depth colors
+      else { O[i]=A[i]; O[i+1]=A[i+1]; O[i+2]=A[i+2]; } // hypsometric land
+      O[i+3]=255;
+    }
+    ga.putImageData(out,0,0);
+    const tex=new THREE.CanvasTexture(ca); tex.colorSpace=THREE.SRGBColorSpace; tex.anisotropy=MAXANISO;
+    const L=LAYERS.find(x=>x.key==='terrain'); L.tex=tex;
+    if(LAYERS[curLayer]===L) applyLayer(earthMat,L);
+  }
+  aImg.onload=()=>{ if(++n===2) ready(); }; bImg.onload=()=>{ if(++n===2) ready(); };
+  aImg.src='assets/earth_hypso_land.png'; bImg.src='assets/earth_topobathy.jpg';
+}
+buildElevationTexture();
+cloudTarget = LAYERS[0].clouds ? 1 : 0;
+
+/* ---- drifting clouds (moving atmosphere) ---- */
+const cloudsMat = new THREE.MeshPhongMaterial({color:0xffffff, transparent:true, opacity:0, depthWrite:false});
+const clouds = new THREE.Mesh(new THREE.SphereGeometry(EARTH_R*1.018, 96, 96), cloudsMat);
+clouds.visible=false; world.add(clouds);
+texLoader.load('assets/earth_clouds.png', t=>{ cloudsMat.alphaMap=t; cloudsMat.needsUpdate=true; });
+
+/* ---- WEATHER layer: colored temperature field + REAL GFS wind streamlines on top ---- */
+const weatherMat = new THREE.ShaderMaterial({
+  transparent:true, depthWrite:false,
+  uniforms:{ uTime:{value:0}, uShow:{value:0} },
+  vertexShader:`varying vec3 vP; varying vec2 vUv;
+    void main(){ vP=normalize(position); vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
+  fragmentShader:`
+    varying vec3 vP; varying vec2 vUv; uniform float uTime,uShow;
+    float hash(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
+    float vnoise(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.0-2.0*f);
+      return mix(mix(hash(i),hash(i+vec2(1,0)),u.x), mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),u.x), u.y); }
+    float fbm(vec2 p){ float a=0.5,s=0.0; for(int k=0;k<5;k++){ s+=a*vnoise(p); p*=2.0; a*=0.5; } return s; }
+    vec3 ramp(float t){ // wind/temperature scale: indigo -> blue -> teal -> green -> yellow -> orange
+      vec3 c0=vec3(0.18,0.16,0.55), c1=vec3(0.13,0.38,0.80), c2=vec3(0.13,0.62,0.66),
+           c3=vec3(0.30,0.78,0.40), c4=vec3(0.93,0.88,0.30), c5=vec3(0.92,0.52,0.18);
+      vec3 c=mix(c0,c1,smoothstep(0.0,0.22,t)); c=mix(c,c2,smoothstep(0.22,0.42,t));
+      c=mix(c,c3,smoothstep(0.42,0.6,t)); c=mix(c,c4,smoothstep(0.6,0.8,t)); c=mix(c,c5,smoothstep(0.8,1.0,t)); return c; }
+    void main(){
+      float lat=vP.y;
+      vec2 uv=vUv*vec2(7.0,3.5);
+      vec2 warp=vec2(fbm(uv+vec2(uTime*0.04,0.0)), fbm(uv+vec2(5.2,1.3)-vec2(uTime*0.03,0.0)));
+      float field=fbm(uv+warp*1.6+vec2(uTime*0.05,0.0));
+      float t=clamp((1.0-abs(lat))*0.82 + (field-0.5)*0.8, 0.0, 1.0);
+      gl_FragColor=vec4(ramp(t), uShow*0.82);
+    }`
+});
+const weather = new THREE.Mesh(new THREE.SphereGeometry(EARTH_R*1.006, 128, 128), weatherMat);
+weather.visible=false; world.add(weather);
+
+/* real GFS wind grid (U/V, 1° res) from the cambecc/earth (nullschool) sample data */
+let WIND_OK=false, WG_NX=360, WG_NY=181, WG_U=null, WG_V=null;
+const WMAXSPD=20;   // m/s for speed->color normalization (lower => greener, nullschool-like)
+fetch('assets/data/gfs-wind.json').then(r=>r.json()).then(j=>{
+  const u=j.find(d=>/U-component/i.test(d.header.parameterNumberName))||j[0];
+  const v=j.find(d=>/V-component/i.test(d.header.parameterNumberName))||j[1];
+  WG_NX=u.header.nx; WG_NY=u.header.ny; WG_U=u.data; WG_V=v.data; WIND_OK=true;
+}).catch(()=>{});
+function sampleWind(lat,lon){            // bilinear; grid row0=90N, col0=0E, 1° spacing
+  if(!WIND_OK) return [Math.cos(lat*Math.PI/180*3)*8, 0];
+  const L=((lon%360)+360)%360;
+  const x=L*(WG_NX/360), y=(90-lat);
+  const x0=Math.floor(x)%WG_NX, x1=(x0+1)%WG_NX, fx=x-Math.floor(x);
+  const y0=Math.max(0,Math.min(WG_NY-1,Math.floor(y))), y1=Math.min(WG_NY-1,y0+1), fy=y-Math.floor(y);
+  const U=WG_U, V=WG_V, nx=WG_NX;
+  const u=(U[y0*nx+x0]*(1-fx)+U[y0*nx+x1]*fx)*(1-fy)+(U[y1*nx+x0]*(1-fx)+U[y1*nx+x1]*fx)*fy;
+  const v=(V[y0*nx+x0]*(1-fx)+V[y0*nx+x1]*fx)*(1-fy)+(V[y1*nx+x0]*(1-fx)+V[y1*nx+x1]*fx)*fy;
+  return [u,v];
+}
+
+/* wind particles advected by the real field, streamlines colored by wind speed */
+const PCOUNT=14000, TRAIL=9, SEGS=TRAIL-1;
+const wlat=new Float32Array(PCOUNT), wlon=new Float32Array(PCOUNT), wage=new Float32Array(PCOUNT), wmax=new Float32Array(PCOUNT), wspd=new Float32Array(PCOUNT);
+const wtrail=new Float32Array(PCOUNT*TRAIL*3);
+const wPos=new Float32Array(PCOUNT*SEGS*2*3);
+const wA=new Float32Array(PCOUNT*SEGS*2);
+const wSarr=new Float32Array(PCOUNT*SEGS*2);
+let windT=0;
+function wllpos(lat,lon){ const phi=(90-lat)*Math.PI/180, th=(lon+180)*Math.PI/180, r=EARTH_R*1.012;
+  return [-r*Math.sin(phi)*Math.cos(th), r*Math.cos(phi), r*Math.sin(phi)*Math.sin(th)]; }
+function wreset(i){
+  wlat[i]=Math.asin(2*Math.random()-1)*180/Math.PI; wlon[i]=Math.random()*360-180;
+  wage[i]=0; wmax[i]=60+Math.random()*90;
+  const p=wllpos(wlat[i],wlon[i]); const b=i*TRAIL*3;
+  for(let s=0;s<TRAIL;s++){ wtrail[b+s*3]=p[0]; wtrail[b+s*3+1]=p[1]; wtrail[b+s*3+2]=p[2]; }
+}
+for(let i=0;i<PCOUNT;i++) wreset(i);
+function windStep(dt){
+  for(let i=0;i<PCOUNT;i++){
+    const uv=sampleWind(wlat[i],wlon[i]);
+    wspd[i]=Math.sqrt(uv[0]*uv[0]+uv[1]*uv[1]);
+    const cl=Math.max(0.2,Math.cos(wlat[i]*Math.PI/180));
+    wlon[i]+=(uv[0]/cl)*0.065*dt; wlat[i]+=uv[1]*0.065*dt;
+    if(wlon[i]>180)wlon[i]-=360; else if(wlon[i]<-180)wlon[i]+=360;
+    wage[i]+=dt;
+    if(wlat[i]>88||wlat[i]<-88||wage[i]>wmax[i]){ wreset(i); wspd[i]=0; continue; }
+    const b=i*TRAIL*3;
+    for(let s=0;s<TRAIL-1;s++){ wtrail[b+s*3]=wtrail[b+(s+1)*3]; wtrail[b+s*3+1]=wtrail[b+(s+1)*3+1]; wtrail[b+s*3+2]=wtrail[b+(s+1)*3+2]; }
+    const p=wllpos(wlat[i],wlon[i]);
+    wtrail[b+(TRAIL-1)*3]=p[0]; wtrail[b+(TRAIL-1)*3+1]=p[1]; wtrail[b+(TRAIL-1)*3+2]=p[2];
+  }
+  let o=0, ao=0;
+  for(let i=0;i<PCOUNT;i++){ const b=i*TRAIL*3; const sn=Math.min(1, wspd[i]/WMAXSPD);
+    for(let s=0;s<SEGS;s++){
+      wPos[o++]=wtrail[b+s*3]; wPos[o++]=wtrail[b+s*3+1]; wPos[o++]=wtrail[b+s*3+2];
+      wPos[o++]=wtrail[b+(s+1)*3]; wPos[o++]=wtrail[b+(s+1)*3+1]; wPos[o++]=wtrail[b+(s+1)*3+2];
+      wA[ao]=s/SEGS; wA[ao+1]=(s+1)/SEGS; wSarr[ao]=sn; wSarr[ao+1]=sn; ao+=2;
+    }
+  }
+  windGeo.attributes.position.needsUpdate=true; windGeo.attributes.aA.needsUpdate=true; windGeo.attributes.aS.needsUpdate=true;
+}
+const windGeo=new THREE.BufferGeometry();
+windGeo.setAttribute('position', new THREE.BufferAttribute(wPos,3));
+windGeo.setAttribute('aA', new THREE.BufferAttribute(wA,1));
+windGeo.setAttribute('aS', new THREE.BufferAttribute(wSarr,1));
+const windMat=new THREE.ShaderMaterial({
+  transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
+  uniforms:{ uShow:{value:0} },
+  vertexShader:`attribute float aA; attribute float aS; varying float vA; varying float vS;
+    void main(){ vA=aA; vS=aS; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
+  fragmentShader:`varying float vA; varying float vS; uniform float uShow;
+    void main(){
+      // white streamlines (with a faint warm tint at high speed) over the colored field
+      vec3 c=mix(vec3(0.92,0.98,1.0), vec3(1.0,0.96,0.85), smoothstep(0.6,1.0,vS));
+      gl_FragColor=vec4(c, vA*vA*0.7*uShow);
+    }`
+});
+const wind=new THREE.LineSegments(windGeo, windMat);
+wind.frustumCulled=false; wind.visible=false; world.add(wind);
+windStep(1);
+
+/* ============================================================
+   EXTRA DATA LAYERS (globe.gl-style): population spikes, air-route arcs, satellites
+   Each is a Group added to `world`; a layer's `viz` key fades it in.
+   ============================================================ */
+function llv(lat,lon,alt){ const r=EARTH_R*(1+(alt||0)), phi=(90-lat)*Math.PI/180, th=(lon+180)*Math.PI/180;
+  return new THREE.Vector3(-r*Math.sin(phi)*Math.cos(th), r*Math.cos(phi), r*Math.sin(phi)*Math.sin(th)); }
+const VIZ = {};
+let satTick = 0;
+
+/* --- Population spikes (world_population.csv: lat,lng,pop) --- */
+(function(){
+  const grp=new THREE.Group(); grp.visible=false; world.add(grp);
+  VIZ.pop={obj:grp, mats:[], target:0, cur:0, max:0.95};
+  fetch('assets/data/world_population.csv').then(r=>r.text()).then(txt=>{
+    const lines=txt.trim().split('\n'); lines.shift();
+    const pos=[], col=[];
+    for(const ln of lines){
+      const c=ln.split(','); const lat=+c[0], lon=+c[1], pop=+c[2]; if(!pop) continue;
+      const h=Math.min(0.5, Math.sqrt(pop)/8500);
+      const a=llv(lat,lon,0), b=llv(lat,lon,h);
+      const t=Math.min(1,Math.sqrt(pop/1.2e7));               // YlOrRd by population
+      const r=0.55+0.45*t, g=0.92-0.72*t, bl=0.30-0.26*t;
+      pos.push(a.x,a.y,a.z, b.x,b.y,b.z);
+      col.push(r*0.35,g*0.35,bl*0.35, r,g,bl);
+    }
+    const g=new THREE.BufferGeometry();
+    g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+    g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
+    const m=new THREE.LineBasicMaterial({vertexColors:true, transparent:true, opacity:0, blending:THREE.AdditiveBlending, depthWrite:false});
+    const seg=new THREE.LineSegments(g,m); seg.frustumCulled=false; grp.add(seg); VIZ.pop.mats.push(m);
+  }).catch(()=>{});
+})();
+
+/* --- Air-route arcs (US international outbound, openflights) --- */
+if(LAYERS.some(l=>l.viz==='routes')) (function(){
+  const grp=new THREE.Group(); grp.visible=false; world.add(grp);
+  VIZ.routes={obj:grp, mats:[], target:0, cur:0, max:0.9};
+  Promise.all([
+    fetch('assets/data/airports.dat').then(r=>r.text()),
+    fetch('assets/data/routes.dat').then(r=>r.text())
+  ]).then(([ap,rt])=>{
+    const A={};
+    ap.split('\n').forEach(line=>{
+      const f=line.match(/("[^"]*"|[^,]+)/g); if(!f||f.length<8) return;
+      const iata=f[4].replace(/"/g,''); if(!iata||iata==='\\N') return;
+      A[iata]={lat:+f[6], lon:+f[7], country:f[3].replace(/"/g,'')};
+    });
+    const seen=new Set(), pos=[], col=[];
+    rt.split('\n').forEach(line=>{
+      const f=line.split(','); const s=A[f[2]], d=A[f[4]]; if(!s||!d) return;
+      if(s.country!=='United States' || d.country==='United States') return;
+      const key=f[2]+'>'+f[4]; if(seen.has(key)) return; seen.add(key);
+      const va=llv(s.lat,s.lon,0), vb=llv(d.lat,d.lon,0), ang=va.angleTo(vb), lift=0.10+0.30*(ang/Math.PI);
+      const N=28; let prev=null;
+      for(let i=0;i<=N;i++){ const t=i/N;
+        const p=new THREE.Vector3().copy(va).lerp(vb,t).normalize().multiplyScalar(EARTH_R*(1+Math.sin(t*Math.PI)*lift));
+        const cr=0.20+0.75*t, cg=0.95-0.65*t, cb=0.55-0.30*t;   // green -> red
+        if(prev){ pos.push(prev.x,prev.y,prev.z, p.x,p.y,p.z); col.push(ppc[0],ppc[1],ppc[2], cr,cg,cb); }
+        prev=p; var ppc=[cr,cg,cb];
+      }
+    });
+    const g=new THREE.BufferGeometry();
+    g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+    g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
+    const m=new THREE.LineBasicMaterial({vertexColors:true, transparent:true, opacity:0, blending:THREE.AdditiveBlending, depthWrite:false});
+    const seg=new THREE.LineSegments(g,m); seg.frustumCulled=false; grp.add(seg); VIZ.routes.mats.push(m);
+  }).catch(()=>{});
+})();
+
+/* --- Satellites (LEO, real TLE via satellite.js) --- */
+function makeSatSprite(){
+  const c=document.createElement('canvas'); c.width=c.height=64; const g=c.getContext('2d');
+  g.translate(32,32);
+  g.fillStyle='#dff0ff'; g.fillRect(-4,-6,8,12);                 // bus
+  g.fillStyle='#6fb6ff';
+  g.fillRect(-22,-4,15,8); g.fillRect(7,-4,15,8);                // solar panels
+  g.strokeStyle='rgba(220,245,255,.9)'; g.lineWidth=1.5;
+  g.strokeRect(-22,-4,15,8); g.strokeRect(7,-4,15,8);
+  g.fillStyle='#eaf6ff'; g.fillRect(-1,-12,2,6);                 // antenna
+  const t=new THREE.CanvasTexture(c); t.colorSpace=THREE.SRGBColorSpace; return t;
+}
+const SAT={ pts:null, mat:null, recs:[], n:0, group:new THREE.Group() };
+SAT.group.visible=false; world.add(SAT.group);
+VIZ.sats={obj:SAT.group, mats:[], target:0, cur:0, max:1};
+(function(){
+  fetch('assets/data/space-track-leo.txt').then(r=>r.text()).then(txt=>{
+    const L=txt.split('\n'); const recs=[];
+    for(let i=0;i+2<L.length;i+=3){
+      const l1=L[i+1], l2=L[i+2];
+      if(!l1||!l2||l1[0]!=='1'||l2[0]!=='2') continue;
+      recs.push([l1.trim(), l2.trim()]);
+    }
+    SAT._raw=recs; SAT.n=recs.length;
+    const pos=new Float32Array(SAT.n*3);
+    const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.BufferAttribute(pos,3));
+    const m=new THREE.PointsMaterial({map:makeSatSprite(), color:0xffffff, size:0.13, sizeAttenuation:true, transparent:true, opacity:0, depthWrite:false, alphaTest:0.12});
+    SAT.pts=new THREE.Points(g,m); SAT.pts.frustumCulled=false; SAT.group.add(SAT.pts);
+    SAT.mat=m; VIZ.sats.mats.push(m);
+    if(window.satellite){ SAT.recs=recs.map(([a,b])=>{try{return window.satellite.twoline2satrec(a,b)}catch(e){return null}}); updateSats(0); }
+  }).catch(()=>{});
+})();
+function updateSats(minOffset){
+  if(!window.satellite || !SAT.pts) return;
+  if(!SAT.recs.length && SAT._raw){ SAT.recs=SAT._raw.map(([a,b])=>{try{return window.satellite.twoline2satrec(a,b)}catch(e){return null}}); }
+  const now=new Date(Date.now()+ (minOffset||0)*60000);
+  const gmst=window.satellite.gstime(now);
+  const arr=SAT.pts.geometry.attributes.position.array; const s=EARTH_R/6371;
+  for(let i=0;i<SAT.recs.length;i++){
+    const rec=SAT.recs[i]; let ok=false;
+    if(rec){ const pv=window.satellite.propagate(rec, now);
+      if(pv && pv.position){ const gd=window.satellite.eciToEcf(pv.position, gmst);
+        arr[i*3]=gd.x*s; arr[i*3+1]=gd.z*s; arr[i*3+2]=-gd.y*s; ok=true; } }
+    if(!ok){ arr[i*3]=arr[i*3+1]=arr[i*3+2]=0; }
+  }
+  SAT.pts.geometry.attributes.position.needsUpdate=true;
+}
+
+/* crossfade between layers + retarget clouds/ice */
+let fade=null;
+function setLayer(i){
+  if(i===curLayer || !LAYERS[i]) return;
+  applyLayer(earth2Mat, LAYERS[i]);
+  earth2Mat.opacity=0; earth2.visible=true;
+  cloudTarget   = LAYERS[i].clouds ? 1 : 0;
+  weatherTarget = LAYERS[i].weather ? 1 : 0;
+  for(const k in VIZ) VIZ[k].target = (LAYERS[i].viz===k) ? 1 : 0;
+  fade={ to:i, t:0 };
+}
+window.setEarthLayer = setLayer;
+/* debug helpers for headless preview (rAF paused there) */
+window.__renderLayer = (i, tsec)=>{
+  if(fade){ earth2.visible=false; earth2Mat.opacity=0; fade=null; }
+  applyLayer(earthMat, LAYERS[i]); curLayer=i;
+  const t = tsec||0;
+  cloudTarget   = cloudCur   = LAYERS[i].clouds?1:0;
+  weatherTarget = weatherCur = LAYERS[i].weather?1:0;
+  cloudsMat.opacity = cloudCur*0.85; clouds.visible = cloudCur>0;
+  weatherMat.uniforms.uShow.value = weatherCur; weatherMat.uniforms.uTime.value = t; weather.visible = weatherCur>0;
+  windMat.uniforms.uShow.value = weatherCur; wind.visible = weatherCur>0;
+  if(LAYERS[i].weather){ windT=t; for(let k=0;k<TRAIL+8;k++){ windStep(1); } }
+  clouds.rotation.y = t*0.02;
+  if(LAYERS[i].breathe) earthMat.emissiveIntensity = 0.14 + 0.10*Math.sin(t*1.3);
+  for(const k in VIZ){ const V=VIZ[k]; V.target=V.cur=(LAYERS[i].viz===k)?1:0; V.obj.visible=V.cur>0.01; V.mats.forEach(m=>m.opacity=V.cur*V.max); }
+  if(LAYERS[i].viz==='sats') updateSats(0);
+  renderer.render(scene,camera);
+  return 'rendered '+LAYERS[i].key;
+};
+
+/* ---- lat/lon -> vector ---- */
+function ll(lat,lon,r){
+  const phi=(90-lat)*Math.PI/180, th=(lon+180)*Math.PI/180;
+  return new THREE.Vector3(-r*Math.sin(phi)*Math.cos(th), r*Math.cos(phi), r*Math.sin(phi)*Math.sin(th));
+}
+
+/* ---- clickable registry ---- */
+const clickable = [];
+function register(obj, label, sub, target){
+  obj.userData = {label, sub, target, baseScale:obj.scale.x};
+  clickable.push(obj);
+}
+
+/* ---- ground markers (eye / aperture style) ---- */
+function marker(lat,lon,color,label,sub,target){
+  const pos = ll(lat,lon,EARTH_R*1.012);
+  // filled pupil (also the click target)
+  const pupil = new THREE.Mesh(new THREE.CircleGeometry(0.038,24),
+    new THREE.MeshBasicMaterial({color, side:THREE.DoubleSide}));
+  pupil.position.copy(pos); pupil.lookAt(0,0,0);
+  // static iris ring
+  const iris = new THREE.Mesh(new THREE.RingGeometry(0.056,0.07,30),
+    new THREE.MeshBasicMaterial({color, transparent:true, opacity:.95, side:THREE.DoubleSide}));
+  iris.position.copy(pos); iris.lookAt(0,0,0);
+  // pulsing outer beacon ring
+  const ring = new THREE.Mesh(new THREE.RingGeometry(0.085,0.1,30),
+    new THREE.MeshBasicMaterial({color, transparent:true, opacity:.5, side:THREE.DoubleSide}));
+  ring.position.copy(pos); ring.lookAt(0,0,0);
+  world.add(ring); world.add(iris); world.add(pupil);
+  pupil.userData.ring = ring;
+  register(pupil,label,sub,target);
+  return pupil;
+}
+marker(48.0,67.0,0x3fbf9a,'Kazakhstan campaign','Experience','#');
+marker(46.8,103.0,0x3fbf9a,'Mongolia campaign','Experience','#');
+marker(34.7,-86.6,0x378add,'Huntsville · NASA MSFC','About','#');
+marker(20.6,78.9,0xf2a93b,'India','Relocating Aug 2026','#');
+
+/* ---- satellites ---- */
+const sats = [];
+function makeSatellite(label,sub,target,radius,incl,speed,phase,color){
+  const g = new THREE.Group();
+  const busMat = new THREE.MeshStandardMaterial({color:0xe6b94e, metalness:.85, roughness:.35, emissive:0x3a2a08, emissiveIntensity:.35});
+  const bus = new THREE.Mesh(new THREE.BoxGeometry(0.2,0.2,0.28), busMat); g.add(bus);
+  const trimMat = new THREE.MeshStandardMaterial({color:0x8a6a1e, metalness:.7, roughness:.5});
+  const trim = new THREE.Mesh(new THREE.BoxGeometry(0.205,0.06,0.285), trimMat); trim.position.y=-0.07; g.add(trim);
+  const wingMat = new THREE.MeshStandardMaterial({color:0x16306a, metalness:.5, roughness:.35, emissive:color, emissiveIntensity:.22});
+  const frameMat = new THREE.MeshStandardMaterial({color:0x9fb2d8, metalness:.8, roughness:.3});
+  function wing(side){
+    const w = new THREE.Group();
+    const boom = new THREE.Mesh(new THREE.CylinderGeometry(0.012,0.012,0.16,8), frameMat);
+    boom.rotation.z=Math.PI/2; boom.position.x=side*0.18; w.add(boom);
+    for(let k=0;k<3;k++){
+      const cell = new THREE.Mesh(new THREE.BoxGeometry(0.13,0.004,0.17), wingMat);
+      cell.position.set(side*(0.30+k*0.135),0,0); w.add(cell);
+      const fr = new THREE.Mesh(new THREE.BoxGeometry(0.135,0.008,0.012), frameMat);
+      fr.position.set(side*(0.30+k*0.135),0,0); w.add(fr);
+    }
+    return w;
+  }
+  g.add(wing(1)); g.add(wing(-1));
+  const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.01,0.01,0.1,6), frameMat); mast.position.set(0,0.16,0.08); g.add(mast);
+  const dish = new THREE.Mesh(new THREE.SphereGeometry(0.07,16,8,0,Math.PI*2,0,Math.PI/2.4),
+    new THREE.MeshStandardMaterial({color:0xdfe8f7, metalness:.6, roughness:.3, side:THREE.DoubleSide}));
+  dish.position.set(0,0.215,0.08); dish.rotation.x=Math.PI; g.add(dish);
+  const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.06,0.1,16),
+    new THREE.MeshStandardMaterial({color:0x1b2840, metalness:.7, roughness:.4})); barrel.position.y=-0.16; g.add(barrel);
+  const lens = new THREE.Mesh(new THREE.CircleGeometry(0.045,20), new THREE.MeshBasicMaterial({color}));
+  lens.position.y=-0.211; lens.rotation.x=-Math.PI/2; g.add(lens);
+  const hit = new THREE.Mesh(new THREE.SphereGeometry(0.42,12,12), new THREE.MeshBasicMaterial({visible:false})); g.add(hit);
+  g.scale.setScalar(1);
+  register(hit,label,sub,target); hit.userData.group=g; hit.userData.kind='sat';
+  const orbit = {g, radius, incl, speed, phase, hit}; sats.push(orbit); system.add(g);
+  const pts=[]; for(let i=0;i<=128;i++){const a=i/128*Math.PI*2; pts.push(new THREE.Vector3(Math.cos(a)*radius,0,Math.sin(a)*radius));}
+  const ring = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),
+    new THREE.LineBasicMaterial({color,transparent:true,opacity:.32}));
+  ring.rotation.x=incl; system.add(ring); orbit.ring=ring;
+  return orbit;
+}
+makeSatellite('Prithvi-EO-2.0','AI & Foundation Models','#',2.9,0.5,0.16,0,0x3fbf9a);
+makeSatellite('Projects & Platforms','PRISM · SAR · benchmarks','#',3.5,-0.7,0.12,2.1,0x378add);
+makeSatellite('Publications','27 papers · Scholar','#',3.15,0.95,0.14,4.0,0x8b7bb0);
+
+/* ---- downlink beam: sat #1 -> Huntsville ---- */
+const downGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(),new THREE.Vector3()]);
+const downlink = new THREE.Line(downGeo,new THREE.LineBasicMaterial({color:0x378add,transparent:true,opacity:0}));
+system.add(downlink);
+
+/* ============================================================
+   INTERACTION
+   ============================================================ */
+const ray = new THREE.Raycaster();
+ray.params.Points = {threshold:0.2};
+const mouse = new THREE.Vector2();
+let dragging=false, lastX=0, lastY=0;
+let targetRotY=0, targetRotX=0, curRotY=0, curRotX=0;
+let camDist=7.2, hovered=null, paused=false, orbitClock=0;
+
+function resize(){
+  const w=window.innerWidth, h=window.innerHeight; if(!w||!h) return;
+  renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix();
+}
+window.addEventListener('resize',resize);
+if(window.ResizeObserver){ new ResizeObserver(resize).observe(document.body); }
+
+function ptr(e){
+  const r=canvas.getBoundingClientRect();
+  const x=(e.touches?e.touches[0].clientX:e.clientX);
+  const y=(e.touches?e.touches[0].clientY:e.clientY);
+  mouse.x=((x-r.left)/r.width)*2-1; mouse.y=-((y-r.top)/r.height)*2+1;
+  return {x,y};
+}
+let downPos=null;
+function onDown(e){dragging=true; const p=ptr(e); lastX=p.x; lastY=p.y; downPos=p;}
+function onMove(e){
+  const p=ptr(e);
+  if(dragging){
+    targetRotY += (p.x-lastX)*0.006; targetRotX += (p.y-lastY)*0.006;
+    targetRotX = Math.max(-0.8,Math.min(0.8,targetRotX)); lastX=p.x; lastY=p.y;
+  }
+  ray.setFromCamera(mouse,camera);
+  const hits = ray.intersectObjects(clickable,false);
+  if(hits.length){
+    const obj=hits[0].object; canvas.style.cursor='pointer';
+    if(hovered!==obj){hovered=obj;}
+    paused=true; tooltip.style.opacity='1'; tooltip.style.left=p.x+'px'; tooltip.style.top=p.y+'px';
+    tooltip.innerHTML = obj.userData.label + '<span class="t-sub">'+obj.userData.sub+' →</span>';
+  } else {
+    canvas.style.cursor= dragging?'grabbing':'grab'; hovered=null; paused=false; tooltip.style.opacity='0';
+  }
+}
+function onUp(e){
+  dragging=false;
+  if(downPos){
+    const p=ptr(e.changedTouches?{touches:e.changedTouches}:e);
+    const moved=Math.hypot(p.x-downPos.x,p.y-downPos.y);
+    if(moved<6){
+      ray.setFromCamera(mouse,camera);
+      const hits=ray.intersectObjects(clickable,false);
+      if(hits.length){ document.querySelector(hits[0].object.userData.target)?.scrollIntoView({behavior:'smooth'}); }
+    }
+  }
+  downPos=null;
+}
+canvas.addEventListener('mousedown',onDown);
+window.addEventListener('mousemove',onMove);
+window.addEventListener('mouseup',onUp);
+canvas.addEventListener('touchstart',e=>{onDown(e);},{passive:true});
+canvas.addEventListener('touchmove',e=>{onMove(e);},{passive:true});
+canvas.addEventListener('touchend',e=>{onUp(e);},{passive:true});
+/* scroll position drives zoom: settles at 2 rest distances (far -> near) */
+const ZOOM_FAR = 7.8, ZOOM_NEAR = 5.6;
+camDist = ZOOM_FAR;
+function updateZoomFromScroll(){
+  const vh = window.innerHeight || 800;
+  const p = Math.min(1, Math.max(0, window.scrollY / (vh * 0.9)));
+  // quantize toward 2 keyframes so it "locks" rather than drifting continuously
+  const stop = p < 0.5 ? p*0.6 : 0.4 + (p-0.5)*1.2; // ease into the second stop
+  camDist = ZOOM_FAR + (ZOOM_NEAR - ZOOM_FAR) * Math.min(1, stop);
+}
+
+/* ============================================================
+   ANIMATION LOOP
+   ============================================================ */
+const clock = new THREE.Clock();
+function animate(){
+  requestAnimationFrame(animate);
+  const t = clock.getElapsedTime();
+  const dt = reduceMotion?0:1;
+  if(!paused && !reduceMotion) orbitClock += 1/60;
+  // layer crossfade
+  if(fade){
+    fade.t += 1/45;
+    const e = Math.min(1, fade.t);
+    earth2Mat.opacity = e;
+    if(e>=1){ applyLayer(earthMat, LAYERS[fade.to]); earth2.visible=false; earth2Mat.opacity=0; curLayer=fade.to; fade=null; }
+  }
+  if(!dragging && !reduceMotion && !paused) targetRotY += 0.0016;
+  curRotY += (targetRotY-curRotY)*0.08; curRotX += (targetRotX-curRotX)*0.08;
+  world.rotation.y = curRotY; world.rotation.x = curRotX;
+
+  clickable.forEach(o=>{
+    if(o.userData.ring){
+      const s=1+Math.sin(t*2+o.position.x*3)*0.25;
+      o.userData.ring.scale.setScalar(s); o.userData.ring.material.opacity=0.5-(s-1)*0.6;
+    }
+  });
+  sats.forEach((s,i)=>{
+    const a = s.phase + orbitClock*s.speed*dt;
+    const ca=Math.cos(a), sa=Math.sin(a);
+    // same transform as the orbit ring (flat circle in XZ, then rotated about X by incl)
+    const x = ca*s.radius;
+    const y = -sa*s.radius*Math.sin(s.incl);
+    const z =  sa*s.radius*Math.cos(s.incl);
+    s.g.position.set(x,y,z); s.g.rotation.y=-a; s.g.rotation.z=Math.sin(orbitClock*0.5+i)*0.15;
+  });
+  const hunts = clickable.find(o=>o.userData.label.includes('Huntsville'));
+  if(hunts){
+    const sp = sats[0].g.position.clone();
+    const hv = system.worldToLocal(hunts.getWorldPosition(new THREE.Vector3()));
+    downGeo.setFromPoints([sp,hv]); downGeo.attributes.position.needsUpdate=true;
+    downlink.material.opacity = 0.14+0.14*(0.5+0.5*Math.sin(t*3));
+  }
+  clickable.forEach(o=>{
+    const isSat = o.userData.kind==='sat'; const node = isSat?o.userData.group:o;
+    const base = isSat?1:(o.userData.baseScale||1); const target=(o===hovered)?base*1.35:base;
+    node.scale.x += (target-node.scale.x)*0.2; node.scale.y=node.scale.z=node.scale.x;
+  });
+  camera.position.z += (camDist-camera.position.z)*0.08;
+  stars.rotation.y = t*0.006; stars2.rotation.y = t*0.004;
+  stars2.material.opacity = 0.7+0.3*Math.sin(t*1.5);
+
+  // drifting clouds (moving atmosphere) — fade toward target + slow independent spin
+  cloudCur += (cloudTarget-cloudCur)*0.06;
+  cloudsMat.opacity = cloudCur*0.85; clouds.visible = cloudCur>0.01;
+  if(!reduceMotion) clouds.rotation.y += 0.00045;
+  // animated weather — dim wash + real GFS wind streamlines
+  weatherCur += (weatherTarget-weatherCur)*0.06;
+  const won = weatherCur>0.01;
+  weatherMat.uniforms.uShow.value = weatherCur; weather.visible = won;
+  if(won && !reduceMotion) weatherMat.uniforms.uTime.value = t;
+  windMat.uniforms.uShow.value = weatherCur; wind.visible = won;
+  if(won && !reduceMotion){ windT = t; windStep(1); }
+
+  // extra data layers (population / routes / satellites) fade in/out
+  for(const k in VIZ){ const V=VIZ[k];
+    V.cur += (V.target-V.cur)*0.08; V.obj.visible = V.cur>0.01;
+    V.mats.forEach(m=>{ m.opacity = V.cur*V.max; });
+  }
+  if(VIZ.sats.cur>0.01 && !reduceMotion){ satTick++; if(satTick%3===0) updateSats(satTick*0.03); }
+  // vegetation "breathing" — NDVI greens pulse gently
+  if(LAYERS[curLayer].breathe && !reduceMotion) earthMat.emissiveIntensity = 0.14 + 0.10*Math.sin(t*1.3);
+
+  renderer.render(scene,camera);
+}
+resize(); animate();
+
+window.addEventListener('load',()=>{ setTimeout(()=>document.getElementById('loader').classList.add('done'),500); });
+setTimeout(()=>document.getElementById('loader').classList.add('done'),2500);
+
+/* globe persists across sections (it will change texture per section later);
+   scrolling zooms it toward the near rest distance instead of fading it out */
+window.addEventListener('scroll', updateZoomFromScroll, {passive:true});
+updateZoomFromScroll();
+
+/* temporary layer switcher (later this fires automatically per section) */
+const layersEl = document.getElementById('layers');
+layersEl.innerHTML = '<span class="lab">Earth layer</span>' +
+  LAYERS.map((L,i)=>`<button data-i="${i}"${i===0?' class="active"':''} title="${L.sub}">${L.name}</button>`).join('');
+layersEl.addEventListener('click', e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  const i=+b.dataset.i; setLayer(i);
+  [...layersEl.querySelectorAll('button')].forEach(x=>x.classList.toggle('active', +x.dataset.i===i));
+});
+</script>
+</body>
+</html>

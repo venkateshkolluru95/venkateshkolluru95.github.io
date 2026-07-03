@@ -1,0 +1,315 @@
+{
+ "sites": [
+  {
+   "slug": "alaska",
+   "name": "Alaska",
+   "country": "USA",
+   "lat": 63.12,
+   "lon": -151.0,
+   "cover": "alaska_01.jpg",
+   "coverPoster": null,
+   "photos": [
+    "alaska_01.jpg",
+    "alaska_02.jpg",
+    "alaska_03.jpg"
+   ],
+   "videos": [
+    {
+     "src": "alaska_v01.mp4",
+     "poster": "alaska_v01_poster.jpg"
+    },
+    {
+     "src": "alaska_v02.mp4",
+     "poster": "alaska_v02_poster.jpg"
+    },
+    {
+     "src": "alaska_v03.mp4",
+     "poster": "alaska_v03_poster.jpg"
+    },
+    {
+     "src": "alaska_v04.mp4",
+     "poster": "alaska_v04_poster.jpg"
+    },
+    {
+     "src": "alaska_v05.mp4",
+     "poster": "alaska_v05_poster.jpg"
+    },
+    {
+     "src": "alaska_v06.mp4",
+     "poster": "alaska_v06_poster.jpg"
+    },
+    {
+     "src": "alaska_v07.mp4",
+     "poster": "alaska_v07_poster.jpg"
+    }
+   ]
+  },
+  {
+   "slug": "mongolia",
+   "name": "Mongolia",
+   "country": "Mongolia",
+   "lat": 47.92,
+   "lon": 106.92,
+   "cover": "mongolia_01.jpg",
+   "coverPoster": null,
+   "photos": [
+    "mongolia_01.jpg",
+    "mongolia_02.jpg",
+    "mongolia_03.jpg",
+    "mongolia_04.jpg",
+    "mongolia_05.jpg",
+    "mongolia_06.jpg",
+    "mongolia_07.jpg",
+    "mongolia_08.jpg",
+    "mongolia_09.jpg",
+    "mongolia_10.jpg",
+    "mongolia_11.jpg",
+    "mongolia_12.jpg"
+   ],
+   "videos": [
+    {
+     "src": "mongolia_v01.mp4",
+     "poster": "mongolia_v01_poster.jpg"
+    }
+   ]
+  },
+  {
+   "slug": "kazakhstan",
+   "name": "Kazakhstan",
+   "country": "Kazakhstan",
+   "lat": 51.13,
+   "lon": 71.43,
+   "cover": "kazakhstan_03.jpg",
+   "coverPoster": null,
+   "photos": [
+    "kazakhstan_01.jpg",
+    "kazakhstan_02.jpg",
+    "kazakhstan_03.jpg"
+   ],
+   "videos": []
+  },
+  {
+   "slug": "greece",
+   "name": "Greece",
+   "country": "Greece",
+   "lat": 36.39,
+   "lon": 25.46,
+   "cover": "greece_06.jpg",
+   "coverPoster": null,
+   "photos": [
+    "greece_01.jpg",
+    "greece_02.jpg",
+    "greece_03.jpg",
+    "greece_04.jpg",
+    "greece_05.jpg",
+    "greece_06.jpg",
+    "greece_07.jpg",
+    "greece_08.jpg"
+   ],
+   "videos": []
+  },
+  {
+   "slug": "arizona",
+   "name": "Arizona",
+   "country": "USA",
+   "lat": 36.06,
+   "lon": -112.14,
+   "cover": "arizona_15.jpg",
+   "coverPoster": null,
+   "photos": [
+    "arizona_01.jpg",
+    "arizona_02.jpg",
+    "arizona_03.jpg",
+    "arizona_04.jpg",
+    "arizona_05.jpg",
+    "arizona_06.jpg",
+    "arizona_07.jpg",
+    "arizona_08.jpg",
+    "arizona_09.jpg",
+    "arizona_10.jpg",
+    "arizona_11.jpg",
+    "arizona_12.jpg",
+    "arizona_13.jpg",
+    "arizona_14.jpg",
+    "arizona_15.jpg"
+   ],
+   "videos": [
+    {
+     "src": "arizona_v01.mp4",
+     "poster": "arizona_v01_poster.jpg"
+    },
+    {
+     "src": "arizona_v02.mp4",
+     "poster": "arizona_v02_poster.jpg"
+    }
+   ]
+  },
+  {
+   "slug": "south-dakota",
+   "name": "South Dakota",
+   "country": "USA",
+   "lat": 43.85,
+   "lon": -102.5,
+   "cover": "south-dakota_01.jpg",
+   "coverPoster": null,
+   "photos": [
+    "south-dakota_01.jpg",
+    "south-dakota_02.jpg",
+    "south-dakota_03.jpg",
+    "south-dakota_04.jpg",
+    "south-dakota_05.jpg"
+   ],
+   "videos": [
+    {
+     "src": "south-dakota_v01.mp4",
+     "poster": "south-dakota_v01_poster.jpg"
+    }
+   ]
+  },
+  {
+   "slug": "national-parks",
+   "name": "US National Parks",
+   "country": "USA",
+   "lat": 44.42,
+   "lon": -110.59,
+   "cover": "national-parks_04.jpg",
+   "coverPoster": null,
+   "photos": [
+    "national-parks_01.jpg",
+    "national-parks_02.jpg",
+    "national-parks_03.jpg",
+    "national-parks_04.jpg",
+    "national-parks_05.jpg",
+    "national-parks_06.jpg",
+    "national-parks_07.jpg",
+    "national-parks_08.jpg",
+    "national-parks_09.jpg",
+    "national-parks_10.jpg",
+    "national-parks_11.jpg",
+    "national-parks_12.jpg",
+    "national-parks_13.jpg"
+   ],
+   "videos": [
+    {
+     "src": "national-parks_v01.mp4",
+     "poster": "national-parks_v01_poster.jpg"
+    }
+   ]
+  },
+  {
+   "slug": "california",
+   "name": "California",
+   "country": "USA",
+   "lat": 37.87,
+   "lon": -119.54,
+   "cover": "california_05.jpg",
+   "coverPoster": null,
+   "photos": [
+    "california_01.jpg",
+    "california_02.jpg",
+    "california_03.jpg",
+    "california_04.jpg",
+    "california_05.jpg",
+    "california_06.jpg",
+    "california_07.jpg"
+   ],
+   "videos": []
+  },
+  {
+   "slug": "niagara",
+   "name": "Niagara Falls",
+   "country": "USA",
+   "lat": 43.08,
+   "lon": -79.07,
+   "cover": null,
+   "coverPoster": "niagara_v01_poster.jpg",
+   "photos": [],
+   "videos": [
+    {
+     "src": "niagara_v01.mp4",
+     "poster": "niagara_v01_poster.jpg"
+    }
+   ]
+  },
+  {
+   "slug": "agra",
+   "name": "Agra",
+   "country": "India",
+   "lat": 27.175,
+   "lon": 78.042,
+   "cover": "agra_07.jpg",
+   "coverPoster": null,
+   "photos": [
+    "agra_01.jpg",
+    "agra_02.jpg",
+    "agra_03.jpg",
+    "agra_04.jpg",
+    "agra_05.jpg",
+    "agra_06.jpg",
+    "agra_07.jpg"
+   ],
+   "videos": []
+  },
+  {
+   "slug": "kolkata",
+   "name": "Kolkata",
+   "country": "India",
+   "lat": 22.57,
+   "lon": 88.36,
+   "cover": "kolkata_06.jpg",
+   "coverPoster": null,
+   "photos": [
+    "kolkata_01.jpg",
+    "kolkata_02.jpg",
+    "kolkata_03.jpg",
+    "kolkata_04.jpg",
+    "kolkata_05.jpg",
+    "kolkata_06.jpg"
+   ],
+   "videos": []
+  },
+  {
+   "slug": "kansas",
+   "name": "Kansas",
+   "country": "USA",
+   "lat": 38.5,
+   "lon": -98.3,
+   "cover": "kansas_02.jpg",
+   "coverPoster": null,
+   "photos": [
+    "kansas_01.jpg",
+    "kansas_02.jpg",
+    "kansas_03.jpg",
+    "kansas_04.jpg"
+   ],
+   "videos": []
+  },
+  {
+   "slug": "disney",
+   "name": "Orlando Parks",
+   "country": "USA",
+   "lat": 28.37,
+   "lon": -81.55,
+   "cover": "disney_03.jpg",
+   "coverPoster": null,
+   "photos": [
+    "disney_01.jpg",
+    "disney_02.jpg",
+    "disney_03.jpg",
+    "disney_04.jpg",
+    "disney_05.jpg",
+    "disney_06.jpg",
+    "disney_07.jpg",
+    "disney_08.jpg",
+    "disney_09.jpg",
+    "disney_10.jpg"
+   ],
+   "videos": [
+    {
+     "src": "disney_v01.mp4",
+     "poster": "disney_v01_poster.jpg"
+    }
+   ]
+  }
+ ]
+}

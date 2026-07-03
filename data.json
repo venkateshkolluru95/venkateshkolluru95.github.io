@@ -1,0 +1,527 @@
+{
+ "news": [
+  {
+   "date": "2026",
+   "html": "Lead-author flood-mapping manuscript <b>submitted to Remote Sensing of Environment</b> (arXiv preprint) — land cover &amp; flood type govern detection limits. <a href=\"https://doi.org/10.48550/arXiv.2606.07780\" target=\"_blank\" rel=\"noopener\">preprint</a>"
+  },
+  {
+   "date": "2026",
+   "html": "New paper in <b>Remote Sensing of Environment</b> — sUAS–Sentinel-2 cross-scale biomass mapping. <a href=\"https://doi.org/10.1016/j.rse.2026.115302\" target=\"_blank\" rel=\"noopener\">DOI</a>"
+  },
+  {
+   "date": "2026",
+   "html": "Co-author on <b>Prithvi-EO-2.0</b> foundation-model paper in <b>IEEE TGRS</b>. <a href=\"https://doi.org/10.1109/TGRS.2025.3642610\" target=\"_blank\" rel=\"noopener\">DOI</a>"
+  },
+  {
+   "date": "2026",
+   "html": "<b>WxC-Bench</b> weather &amp; climate benchmark dataset out in <b>Scientific Data</b>. <a href=\"https://doi.org/10.1038/s41597-026-06839-7\" target=\"_blank\" rel=\"noopener\">DOI</a>"
+  },
+  {
+   "date": "Dec'25",
+   "html": "Presented <b>Operationalizing Prithvi-EO-2.0</b> (oral) at the <b>AGU Fall Meeting 2025</b>."
+  },
+  {
+   "date": "2025",
+   "html": "Awarded the <b>AGU Open Science Recognition Prize</b> (Prithvi Geospatial AI Foundation Model Team)."
+  },
+  {
+   "date": "2025",
+   "html": "Named to the <b>University of South Dakota 30 Under 30</b> class of 2025."
+  },
+  {
+   "date": "2025",
+   "html": "Received the <b>Distinguished Dissertation Award</b> (Biological/Life Sciences) at the University of South Dakota."
+  }
+ ],
+ "awards": [
+  {
+   "year": "2025",
+   "title": "AGU Open Science Recognition Prize",
+   "org": "Prithvi Geospatial AI Foundation Model Team",
+   "media": "agu_open_science.jpg",
+   "mtype": "photo",
+   "link": "https://www.agu.org/user-profile?cstkey=be2923cc-04ee-4a68-b119-9230617a8c98"
+  },
+  {
+   "year": "2025",
+   "title": "Distinguished Dissertation Award — Biological/Life Sciences",
+   "org": "University of South Dakota",
+   "media": "distinguished_dissertation.jpg",
+   "mtype": "doc",
+   "link": "https://www.usd.edu/the-south-dakotan/usds-venkatesh-kolluru-and-justin-gray-honored-with-2025-distinguished-dissertation-awards"
+  },
+  {
+   "year": "2025",
+   "title": "30 Under 30, Class of 2025",
+   "org": "University of South Dakota",
+   "media": "30_under_30.jpg",
+   "mtype": "doc",
+   "link": "https://www.usdalumni.com/news-and-stories/30-qs-with-venkatesh-kolluru"
+  },
+  {
+   "year": "2024",
+   "title": "People's Choice Award",
+   "org": "NSF I-GUIDE virtual poster competition",
+   "media": "nsf_iguide.mp4",
+   "mtype": "video",
+   "poster": "nsf_iguide_poster.jpg",
+   "link": "https://i-guide.io/poster-competition/#winners:~:text=Venkatesh%20Kolluru%20and%20Co%2DAuthors"
+  },
+  {
+   "year": "2023",
+   "title": "Phase 3 U.S. Carbon Program Leadership Award",
+   "org": "North American Carbon Science Community",
+   "media": "nacp_leadership.jpg",
+   "mtype": "doc",
+   "link": "https://www.carboncyclescience.us/news/final-selection-made-phase-3-joint-carbon-cycle-science-program-us-ccsp-north-american-carbon#:~:text=to%2015%2C%202023-,Venkatesh%20Kolluru,-University%20of%20South"
+  },
+  {
+   "year": "2022",
+   "title": "Best Reviewer Award",
+   "org": "Int. J. Applied Earth Observation & Geoinformation",
+   "media": "best_reviewer.jpg",
+   "mtype": "doc",
+   "link": "https://www.sciencedirect.com/journal/international-journal-of-applied-earth-observation-and-geoinformation/about/news"
+  },
+  {
+   "year": "2020",
+   "title": "Best M.Tech Thesis Award",
+   "org": "Indian Society for Technical Education (ISTE)",
+   "media": "iste_thesis.jpg",
+   "mtype": "doc",
+   "link": "https://www.nitk.ac.in/best-mtech-thesis-award-to-k-venkatesh-under-the-uidance-of-drramesh-h"
+  },
+  {
+   "year": "2019",
+   "title": "Best Poster Award — River-Reservoir Modeling Workshop",
+   "org": "IIT Kharagpur",
+   "media": "best_poster_iitkgp.jpg",
+   "mtype": "photo"
+  },
+  {
+   "year": "2024",
+   "title": "John W. Carlson Research Grant",
+   "org": "University of South Dakota",
+   "media": "john_carlson.jpg",
+   "mtype": "photo",
+   "link": "https://www.usd.edu/academics/colleges-and-schools/college-of-arts-sciences/south-dakotan-arts-and-sciences/college-of-arts-and-sciences-students-recognized-with-awards#:~:text=Venkatesh%20Kolluru%2C%20Ph.D."
+  }
+ ],
+ "talks": [
+  {
+   "title": "Towards Operational Readiness of a Geospatial Foundation Model for Near Real-Time Earth Observation",
+   "venue": "IGARSS 2026",
+   "year": "2026",
+   "role": "lead",
+   "kind": "upcoming",
+   "link": "https://2026.ieeeigarss.org/view_paper.php?PaperNum=3689&SessionID=1595"
+  },
+  {
+   "title": "Operationalizing Prithvi-EO-2.0 Foundation Model for Near Real-Time Earth Observation",
+   "venue": "AGU Fall Meeting 2025",
+   "year": "2025",
+   "role": "lead",
+   "kind": "oral",
+   "link": "https://agu.confex.com/agu/agu25/meetingapp.cgi/Paper/1979539"
+  },
+  {
+   "title": "Leveraging sUAS–Sentinel-2 synergy for cross-scale mapping of canopy cover and aboveground biomass across Mongolia and Kazakhstan",
+   "venue": "IALE-North America Annual Meeting 2025",
+   "year": "2025",
+   "role": "lead",
+   "kind": "",
+   "link": "https://www.ialena.org/uploads/9/4/8/2/94821076/iale_program_handout_final.pdf"
+  },
+  {
+   "title": "Spatiotemporal Mapping of Invasive Yellow Sweetclover Blooms Using Sentinel-2 and High-Resolution sUAS Imagery",
+   "venue": "AGU Fall Meeting 2025",
+   "year": "2025",
+   "role": "co",
+   "kind": ""
+  },
+  {
+   "title": "Harnessing the potential of drone imagery and Sentinel-1 data for cross-scale mapping of above-ground biomass and canopy cover across Mongolia and Kazakhstan",
+   "venue": "AGU Fall Meeting 2024",
+   "year": "2024",
+   "role": "lead",
+   "kind": "",
+   "link": "https://ui.adsabs.harvard.edu/abs/2024AGUFMGC21Q0083K/abstract"
+  },
+  {
+   "title": "Developing 30 m aboveground biomass and canopy cover estimates for Mongolia from 1990–2023",
+   "venue": "AGU Fall Meeting 2024",
+   "year": "2024",
+   "role": "lead",
+   "kind": "",
+   "link": "https://ui.adsabs.harvard.edu/abs/2024AGUFMGC21Q0084K/abstract"
+  },
+  {
+   "title": "Examining the relationship between plant species diversity and productivity across grazing and climatic gradients in Kazakhstan and Mongolia",
+   "venue": "ESA Annual Meeting 2024",
+   "year": "2024",
+   "role": "lead",
+   "kind": "",
+   "link": "https://events.rdmobile.com/Speakers/Details/2453139"
+  },
+  {
+   "title": "Examining the relationship between plant species diversity and productivity across climatic, topographic, and grazing gradients in Kazakhstan and Mongolia",
+   "venue": "IALE-North America Annual Meeting 2024",
+   "year": "2024",
+   "role": "lead",
+   "kind": "",
+   "link": "https://www.ialena.org/program-2024.html"
+  },
+  {
+   "title": "Multi-scale / multi-sensor estimates of canopy cover and above-ground biomass trends in Mongolia and Kazakhstan",
+   "venue": "AGU Fall Meeting 2024",
+   "year": "2024",
+   "role": "co",
+   "kind": ""
+  },
+  {
+   "title": "Land Cover and Ecosystem Productivity of Peri-Urban Landscapes in Central Asia",
+   "venue": "AGU Fall Meeting 2024",
+   "year": "2024",
+   "role": "co",
+   "kind": ""
+  },
+  {
+   "title": "Cities along the Core Silk Roads: An Overview through the Lens of Urban-Rural Continuum (URC)",
+   "venue": "AGU Fall Meeting 2024",
+   "year": "2024",
+   "role": "co",
+   "kind": ""
+  },
+  {
+   "title": "Quantifying the Effects of Invasive Plants like Yellow Sweetclover on Native Plant Diversity",
+   "venue": "AGU Fall Meeting 2024",
+   "year": "2024",
+   "role": "co",
+   "kind": ""
+  },
+  {
+   "title": "Quantifying impact of sustainable agriculture management practices on soil health and greenhouse gas emissions in eastern South Dakota",
+   "venue": "AGU Fall Meeting 2024",
+   "year": "2024",
+   "role": "co",
+   "kind": ""
+  },
+  {
+   "title": "Harnessing high-resolution satellite imagery to predict spatiotemporal above-ground biomass and canopy cover in Mongolian grasslands",
+   "venue": "IALE-North America Annual Meeting 2024",
+   "year": "2024",
+   "role": "co",
+   "kind": ""
+  },
+  {
+   "title": "Field-scale detection of cover crops and tillage using remote sensing in eastern South Dakota",
+   "venue": "IALE-North America Annual Meeting 2024",
+   "year": "2024",
+   "role": "co",
+   "kind": ""
+  },
+  {
+   "title": "Mapping annual 10 m invasive yellow sweetclover abundance across western South Dakota (2016–2023)",
+   "venue": "IALE-North America Annual Meeting 2024",
+   "year": "2024",
+   "role": "co",
+   "kind": ""
+  },
+  {
+   "title": "Using object-based image analysis to track Russian olive distributions along the Missouri River in response to flooding",
+   "venue": "IALE-North America Annual Meeting 2024",
+   "year": "2024",
+   "role": "co",
+   "kind": ""
+  },
+  {
+   "title": "Pixel-wise contribution and attribution of socioenvironmental system drivers to grassland degradation in Kazakhstan",
+   "venue": "AGU Fall Meeting 2023",
+   "year": "2023",
+   "role": "lead",
+   "kind": "",
+   "link": "https://ui.adsabs.harvard.edu/abs/2023AGUFMGC31J1166K/abstract"
+  },
+  {
+   "title": "Gridded livestock density database and spatial trends for Kazakhstan",
+   "venue": "AGU Fall Meeting 2023",
+   "year": "2023",
+   "role": "lead",
+   "kind": "",
+   "link": "https://agu.confex.com/agu/fm23/meetingapp.cgi/Paper/1245050"
+  },
+  {
+   "title": "Differentiating anthropogenic modification from climate-driven change in Kazakhstan",
+   "venue": "NASA Carbon Cycle & Ecosystems Joint Science Workshop 2023",
+   "year": "2023",
+   "role": "co",
+   "kind": ""
+  },
+  {
+   "title": "Field-scale detection of multiple agricultural management practices through machine learning in eastern South Dakota",
+   "venue": "AGU Fall Meeting 2023",
+   "year": "2023",
+   "role": "co",
+   "kind": ""
+  },
+  {
+   "title": "Carbon offset potential of Midwest agroecosystems: a spatialized life-cycle assessment framework",
+   "venue": "AGU Fall Meeting 2023",
+   "year": "2023",
+   "role": "co",
+   "kind": ""
+  },
+  {
+   "title": "Socioeconomic-environmental systems along the Silk Road across the Asian Drylands Belt",
+   "venue": "AGU Fall Meeting 2023",
+   "year": "2023",
+   "role": "co",
+   "kind": ""
+  },
+  {
+   "title": "Interdependent dynamics of food, energy, water and grassland degradation estimates in Kazakhstan and Mongolia",
+   "venue": "AGU Fall Meeting 2023",
+   "year": "2023",
+   "role": "co",
+   "kind": ""
+  },
+  {
+   "title": "Examining the causal mechanisms between anthropogenic disturbance, plant diversity, and invasive yellow sweetclover",
+   "venue": "AGU Fall Meeting 2023",
+   "year": "2023",
+   "role": "co",
+   "kind": ""
+  },
+  {
+   "title": "The influence of biophysical drivers on predicting the potential distribution of invasive yellow sweetclover in the Northern Great Plains",
+   "venue": "IALE-North America Annual Meeting 2023",
+   "year": "2023",
+   "role": "co",
+   "kind": ""
+  },
+  {
+   "title": "Land cover change and socioecological influences on terrestrial carbon production in an agroecosystem",
+   "venue": "IALE-North America Annual Meeting 2023",
+   "year": "2023",
+   "role": "co",
+   "kind": ""
+  },
+  {
+   "title": "Multi-decadal assessment of land cover shifts under climate change and urbanization in Central Asia",
+   "venue": "ESA Annual Meeting 2023",
+   "year": "2023",
+   "role": "co",
+   "kind": ""
+  },
+  {
+   "title": "Non-linear and non-stationary interactions between vegetation dynamics and potential driving factors in Kazakhstan",
+   "venue": "Japan Geoscience Union Meeting 2022",
+   "year": "2022",
+   "role": "lead",
+   "kind": ""
+  },
+  {
+   "title": "Land cover land use change and socioeconomic influences on terrestrial carbon production in a Southwest Michigan watershed",
+   "venue": "AGU Fall Meeting 2022",
+   "year": "2022",
+   "role": "co",
+   "kind": ""
+  },
+  {
+   "title": "Relative contributions of climatic change and socioeconomic trends on primary productivity in Kazakhstan and Mongolia",
+   "venue": "Japan Geoscience Union Meeting 2022",
+   "year": "2022",
+   "role": "co",
+   "kind": ""
+  },
+  {
+   "title": "Land use hotspots of the two largest landlocked countries: Kazakhstan and Mongolia",
+   "venue": "Japan Geoscience Union Meeting 2022",
+   "year": "2022",
+   "role": "co",
+   "kind": ""
+  },
+  {
+   "title": "Untangling the role of socio-economic and climatic changes on vegetation greenness and productivity in Kazakhstan",
+   "venue": "AGU Fall Meeting 2021",
+   "year": "2021",
+   "role": "lead",
+   "kind": ""
+  },
+  {
+   "title": "Interdependent dynamics of food, energy, and water in Kazakhstan and Mongolia: connecting LCLUC to socio-ecological systems",
+   "venue": "AGU Fall Meeting 2021",
+   "year": "2021",
+   "role": "co",
+   "kind": ""
+  }
+ ],
+ "publications_featured": [
+  {
+   "year": 2026,
+   "authors": "Kolluru, V., Shinde, R., Marouane, A., Helbling, C., Shah, D., Othneil, D., Gurung, I., Maskey, M., & Ramachandran, R.",
+   "title": "Land cover and flood type govern the detection limits of satellite-based flood mapping across diverse global flood events",
+   "venue": "Remote Sensing of Environment",
+   "status": "submitted · arXiv preprint",
+   "doi": "https://doi.org/10.48550/arXiv.2606.07780"
+  },
+  {
+   "year": 2026,
+   "authors": "Shirkey, G., …, Kolluru, V., et al.",
+   "title": "Multiple lenses on biodiversity significantly improve large-scale estimates of species richness",
+   "venue": "npj Biodiversity",
+   "status": "under review",
+   "doi": ""
+  },
+  {
+   "year": 2026,
+   "authors": "Sharannya, T.M., Farissa, R., Kolluru, V.",
+   "title": "Spatiotemporal analysis of blue and green water dynamics under climate change in a humid tropical catchment of India",
+   "venue": "Journal of Hydrology: Regional Studies",
+   "status": "under revision",
+   "doi": ""
+  }
+ ],
+ "publications_fallback": [
+  {
+   "year": 2026,
+   "authors": "Kolluru, V., John, R., Chen, J., Henebry, G.M., Xiao, J., et al.",
+   "title": "Leveraging sUAS–Sentinel-2 synergy for cross-scale mapping of canopy cover and aboveground biomass across Mongolia and Kazakhstan",
+   "venue": "Remote Sensing of Environment",
+   "doi": "https://doi.org/10.1016/j.rse.2026.115302"
+  },
+  {
+   "year": 2026,
+   "authors": "Szwarcman, D., …, Kolluru, V., et al.",
+   "title": "Prithvi-EO-2.0: A versatile multitemporal foundation model for Earth observation applications",
+   "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+   "doi": "https://doi.org/10.1109/TGRS.2025.3642610"
+  },
+  {
+   "year": 2026,
+   "authors": "Shinde, R., …, Kolluru, V., et al.",
+   "title": "WxC-Bench: A novel dataset for weather and climate downstream tasks",
+   "venue": "Scientific Data",
+   "doi": "https://doi.org/10.1038/s41597-026-06839-7"
+  },
+  {
+   "year": 2026,
+   "authors": "Sharannya, T.M., Kolluru, V., Mahesha, A.",
+   "title": "Assessment of river flow due to anticipated climate and land use changes in the Western Ghats, India",
+   "venue": "Earth Systems and Environment",
+   "doi": "https://doi.org/10.1007/s41748-026-01058-x"
+  },
+  {
+   "year": 2025,
+   "authors": "Saraf, S., John, R., Kolluru, V., et al.",
+   "title": "Spatiotemporal mapping of invasive yellow sweetclover blooms using Sentinel-2 and high-resolution drone imagery",
+   "venue": "Earth System Science Data",
+   "doi": "https://doi.org/10.5194/essd-18-655-2026"
+  },
+  {
+   "year": 2024,
+   "authors": "Shirkey, G., …, Kolluru, V., et al.",
+   "title": "Identifying opportunities for nature-based solutions with geospatialized life cycle assessments and fine-scale socioecological data",
+   "venue": "Environmental Research Letters",
+   "doi": "https://doi.org/10.1088/1748-9326/ad959e"
+  },
+  {
+   "year": 2024,
+   "authors": "Chen, J., John, R., Kolluru, V., et al.",
+   "title": "Natural assets, changes, and variations of the socioeconomic-environmental systems along the Asian drylands belt",
+   "venue": "Environmental Research: Ecology",
+   "doi": "https://doi.org/10.1088/2752-664X/ad9339"
+  },
+  {
+   "year": 2024,
+   "authors": "Kolluru, V., John, R., Chen, J., et al.",
+   "title": "Dominant role of grazing and snow cover variability on vegetation shifts in the drylands of Kazakhstan",
+   "venue": "Communications Earth & Environment",
+   "doi": "https://doi.org/10.1038/s43247-024-01587-1"
+  },
+  {
+   "year": 2024,
+   "authors": "Jain, K., John, R., Torbick, N., Kolluru, V., et al.",
+   "title": "Monitoring the spatial distribution of cover crops and tillage practices using machine learning across eastern South Dakota",
+   "venue": "Environmental Management",
+   "doi": "https://doi.org/10.1007/s00267-024-02021-0"
+  },
+  {
+   "year": 2023,
+   "authors": "Kolluru, V., John, R., Saraf, S., et al.",
+   "title": "Gridded livestock density database and spatial trends for Kazakhstan",
+   "venue": "Scientific Data",
+   "doi": "https://doi.org/10.1038/s41597-023-02736-5"
+  },
+  {
+   "year": 2023,
+   "authors": "Saraf, S., John, R., …, Kolluru, V., et al.",
+   "title": "Biophysical drivers for predicting the distribution and abundance of invasive yellow sweetclover in the Northern Great Plains",
+   "venue": "Landscape Ecology",
+   "doi": "https://doi.org/10.1007/s10980-023-01613-1"
+  },
+  {
+   "year": 2022,
+   "authors": "Kolluru, V., John, R., Chen, J., et al.",
+   "title": "Untangling the impacts of socioeconomic and climatic changes on vegetation greenness and productivity in Kazakhstan",
+   "venue": "Environmental Research Letters",
+   "doi": "https://doi.org/10.1088/1748-9326/ac8c59"
+  },
+  {
+   "year": 2022,
+   "authors": "Kolluru, V., John, R., Chen, J., Xiao, J., et al.",
+   "title": "Optimal ranges of social-environmental drivers and their impacts on vegetation dynamics in Kazakhstan",
+   "venue": "Science of the Total Environment",
+   "doi": "https://doi.org/10.1016/j.scitotenv.2022.157562"
+  },
+  {
+   "year": 2022,
+   "authors": "Mani, S.T., Kolluru, V., Amai, M., Acharya, T.D.",
+   "title": "Enhanced streamflow simulations using nudging-based optimization coupled with data-driven and hydrological models",
+   "venue": "Journal of Hydrology: Regional Studies",
+   "doi": "https://doi.org/10.1016/j.ejrh.2022.101190"
+  },
+  {
+   "year": 2022,
+   "authors": "Yuan, J., Chen, J., …, Kolluru, V., et al.",
+   "title": "Land use hotspots of the two largest landlocked countries: Kazakhstan and Mongolia",
+   "venue": "Remote Sensing",
+   "doi": "https://doi.org/10.3390/rs14081805"
+  },
+  {
+   "year": 2021,
+   "authors": "Kolluru, V., Kolluru, S.",
+   "title": "Development and evaluation of pre- and post-integration techniques for enhancing drought predictions over India",
+   "venue": "International Journal of Climatology",
+   "doi": "https://doi.org/10.1002/joc.7100"
+  },
+  {
+   "year": 2020,
+   "authors": "Kolluru, V., Kolluru, S., Konkathi, P.",
+   "title": "Evaluation and integration of reanalysis rainfall products under contrasting climatic conditions in India",
+   "venue": "Atmospheric Research",
+   "doi": "https://doi.org/10.1016/j.atmosres.2020.105121"
+  },
+  {
+   "year": 2020,
+   "authors": "Kolluru, V., Ramesh, H., Das, P.",
+   "title": "Modelling stream flow and soil erosion response considering varied land practices in a cascading river basin",
+   "venue": "Journal of Environmental Management",
+   "doi": "https://doi.org/10.1016/j.jenvman.2020.110448"
+  },
+  {
+   "year": 2019,
+   "authors": "Kolluru, V., Preethi, K., Ramesh, H.",
+   "title": "Evaluating the effects of forest fire on water balance using fire susceptibility maps",
+   "venue": "Ecological Indicators",
+   "doi": "https://doi.org/10.1016/j.ecolind.2019.105856"
+  }
+ ],
+ "scholar": {
+  "citations": 890,
+  "hindex": 15,
+  "i10": 18,
+  "user": "7Tji1bMAAAAJ",
+  "updated": "2026-07-02"
+ }
+}

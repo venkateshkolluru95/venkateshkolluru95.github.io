@@ -1,0 +1,43 @@
+# Venkatesh Kolluru, Ph.D.
+
+> Applied scientist at NASA MSFC ODSI / University of Alabama in Huntsville,
+> working across Earth observation, landscape ecology, and hydrology.
+> Operationalizes geospatial foundation models (Prithvi-EO-2.0) for satellite
+> Earth observation. Open to collaborations across Earth observation,
+> geospatial AI, ecosystems, and water.
+
+## Contact
+- Email: venkateshkolluru95@gmail.com
+- Google Scholar: https://scholar.google.com/citations?user=7Tji1bMAAAAJ&hl=en
+- ORCID: https://orcid.org/0000-0002-2110-5560
+- GitHub: https://github.com/venkateshkolluru95
+- LinkedIn: https://www.linkedin.com/in/venkatesh-kolluru-855597175/
+
+## Current role
+Research Scientist III, NASA MSFC ODSI and University of Alabama in Huntsville
+(Jan 2025 – present). Fine-tuned and deployed the 600M-parameter Prithvi-EO-2.0
+geospatial foundation model for flood mapping, burn-scar detection, landslide
+detection, and multi-temporal crop classification, served live through the PRISM
+portal (https://explore.fm.odsi.io/). Reduced per-event inference latency 8.6x
+(288s to 30s). Architected a five-stage agentic scientific workflow pipeline
+(CARE / CLSW). Authored a red-teaming framework that improved end-to-end model
+precision from 4.9% to 98.6%. Benchmarked across 19 globally distributed
+out-of-distribution test cases.
+
+## Skills
+Python, PyTorch, TerraTorch, Vision Transformers, foundation-model fine-tuning,
+LoRA, transfer learning, out-of-distribution evaluation, red-teaming, semantic
+segmentation, change detection, agentic AI (OpenAI Custom GPTs, FastMCP, Pydantic
+AI), NASA Earthdata APIs (CMR, STAC), GDAL, rasterio, geopandas, Google Earth
+Engine, ArcGIS Pro, QGIS, R, MATLAB, SQL, CUDA/V100, statistical attribution
+(Granger Causality, Shapley, SEM, geodetector).
+
+## Education
+- Ph.D., Environment and Sustainability, University of South Dakota (2021–2024). CGPA 4.0/4.0. Distinguished Dissertation Award.
+- M.Tech (Research), Remote Sensing and GIS, NIT Karnataka (2017–2019). Best M.Tech Thesis Award (ISTE).
+- B.Tech, Civil Engineering, GMR Institute of Technology (2012–2016).
+
+## Record
+27 peer-reviewed publications, 4 under review, 2 book chapters, 34 conference
+presentations, 120+ peer reviews. Awards include the 2025 AGU Open Science
+Recognition Prize and the USD Distinguished Dissertation Award.
