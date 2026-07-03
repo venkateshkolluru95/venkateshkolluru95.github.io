@@ -11,6 +11,7 @@ permissions:
 jobs:
   crawl:
     runs-on: ubuntu-latest
+    timeout-minutes: 12      # Google may block datacenter IPs; fail fast, keep last good data
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
